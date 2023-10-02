@@ -10,3 +10,7 @@ export * from './ciudad.model';
 export * from './calificacion-conductor.model';
 export * from './factura.model';
 export * from './calificacion-cliente.model';
+export * from './estado-conductor.model';
+export * from './estado-viaje.model';
+export * from './bloqueo-cliente.model';
+export * from './bloqueo-conductor.model';

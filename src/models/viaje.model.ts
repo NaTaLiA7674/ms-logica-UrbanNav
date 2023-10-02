@@ -33,12 +33,6 @@ export class Viaje extends Entity {
   })
   kmRecorrido: number;
 
-  @property({
-    type: 'string',
-  })
-  estadoViaje?: string;
-
-
   constructor(data?: Partial<Viaje>) {
     super(data);
   }

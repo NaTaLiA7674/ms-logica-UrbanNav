@@ -9,23 +9,20 @@ export class Licencia extends Entity {
   })
   id?: number;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  nombres: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  apellidos: string;
+  //Realizar la relacion con el modelo Conductor para nombre y apellido
 
   @property({
     type: 'date',
     required: true,
   })
   vigencia: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  restricciones: string;
+
 
 
   constructor(data?: Partial<Licencia>) {

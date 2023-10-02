@@ -31,12 +31,6 @@ export class Conductor extends Entity {
   })
   segundoApellido?: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  estadoConductor: string;
-
 
   constructor(data?: Partial<Conductor>) {
     super(data);
