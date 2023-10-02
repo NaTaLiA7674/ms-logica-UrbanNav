@@ -1,4 +1,9 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
+import {Vehiculo} from './vehiculo.model';
+import {Licencia} from './licencia.model';
+import {Viaje} from './viaje.model';
+import {EstadoConductor} from './estado-conductor.model';
+import {BloqueoConductor} from './bloqueo-conductor.model';
 
 @model()
 export class Conductor extends Entity {
@@ -31,6 +36,20 @@ export class Conductor extends Entity {
   })
   segundoApellido?: string;
 
+  @belongsTo(() => Vehiculo)
+  vehiculoId: number;
+
+  @belongsTo(() => Licencia)
+  licenciaId: number;
+
+  @hasMany(() => Viaje)
+  viaje: Viaje[];
+
+  @hasMany(() => EstadoConductor)
+  estadoConductor: EstadoConductor[];
+
+  @hasMany(() => BloqueoConductor)
+  bloqueoConductor: BloqueoConductor[];
 
   constructor(data?: Partial<Conductor>) {
     super(data);

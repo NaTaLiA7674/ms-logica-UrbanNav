@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Conductor} from './conductor.model';
 
 @model()
 export class Licencia extends Entity {
@@ -17,6 +18,8 @@ export class Licencia extends Entity {
   })
   vigencia: string;
 
+  @belongsTo(() => Conductor)
+  conductorId: number;
   @property({
     type: 'string',
     required: true,

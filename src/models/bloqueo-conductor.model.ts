@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Conductor} from './conductor.model';
 
 @model()
 export class BloqueoConductor extends Entity {
@@ -21,6 +22,8 @@ export class BloqueoConductor extends Entity {
   })
   fecha: string;
 
+  @belongsTo(() => Conductor)
+  conductorId: number;
 
   constructor(data?: Partial<BloqueoConductor>) {
     super(data);

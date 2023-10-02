@@ -10,3 +10,7 @@ export * from './medio-pago.repository';
 export * from './parada.repository';
 export * from './vehiculo.repository';
 export * from './viaje.repository';
+export * from './bloqueo-cliente.repository';
+export * from './bloqueo-conductor.repository';
+export * from './estado-conductor.repository';
+export * from './estado-viaje.repository';

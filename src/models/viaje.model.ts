@@ -1,4 +1,11 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, belongsTo, model, property, hasMany} from '@loopback/repository';
+import {Cliente} from './cliente.model';
+import {CalificacionConductor} from './calificacion-conductor.model';
+import {CalificacionCliente} from './calificacion-cliente.model';
+import {Factura} from './factura.model';
+import {Conductor} from './conductor.model';
+import {EstadoViaje} from './estado-viaje.model';
+import {Parada} from './parada.model';
 
 @model()
 export class Viaje extends Entity {
@@ -32,6 +39,32 @@ export class Viaje extends Entity {
     required: true,
   })
   kmRecorrido: number;
+
+  @belongsTo(() => Cliente)
+  clienteId: number;
+
+  @belongsTo(() => CalificacionConductor)
+  calificacionConductorId: number;
+
+  @belongsTo(() => CalificacionCliente)
+  calificacionClienteId: number;
+
+  @belongsTo(() => Factura)
+  facturaId: number;
+
+  @belongsTo(() => Conductor)
+  conductorId: number;
+
+  @hasMany(() => EstadoViaje)
+  estadoViaje: EstadoViaje[];
+
+  @hasMany(() => Parada, {keyTo: 'idPuntoOrigen'})
+  idPuntoDestino: Parada[];
+
+  @property({
+    type: 'number',
+  })
+  paradaId?: number;
 
   constructor(data?: Partial<Viaje>) {
     super(data);

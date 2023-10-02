@@ -1,4 +1,8 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Viaje} from './viaje.model';
+import {Factura} from './factura.model';
+import {MedioPago} from './medio-pago.model';
+import {BloqueoCliente} from './bloqueo-cliente.model';
 
 @model()
 export class Cliente extends Entity {
@@ -31,6 +35,22 @@ export class Cliente extends Entity {
   })
   segundoApellido?: string;
 
+  @hasMany(() => Viaje)
+  viaje: Viaje[];
+
+  @hasMany(() => Factura)
+  factura: Factura[];
+
+  @hasMany(() => MedioPago)
+  medioPago: MedioPago[];
+
+  @property({
+    type: 'number',
+  })
+  medioPagoId?: number;
+
+  @hasMany(() => BloqueoCliente)
+  bloqueoCliente: BloqueoCliente[];
 
   constructor(data?: Partial<Cliente>) {
     super(data);
