@@ -34,3 +34,5 @@ export * from './parada-distancias.controller';
 export * from './distancias-parada.controller';
 export * from './viaje-parada.controller';
 export * from './parada-viaje.controller';
+export * from './distancias-parada.controller';
+export * from './parada-distancias.controller';

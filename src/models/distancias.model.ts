@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
 import {Parada} from './parada.model';
 
 @model()
@@ -34,8 +34,13 @@ export class Distancias extends Entity {
   })
   tiempoEstimado: number;
 
-  @belongsTo(() => Parada)
-  paradaId: number;
+  @hasMany(() => Parada)
+  parada: Parada[];
+
+  @property({
+    type: 'number',
+  })
+  paradaId?: number;
 
   constructor(data?: Partial<Distancias>) {
     super(data);

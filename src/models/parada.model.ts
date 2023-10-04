@@ -1,7 +1,7 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {Ciudad} from './ciudad.model';
-import {Distancias} from './distancias.model';
 import {Viaje} from './viaje.model';
+import {Distancias} from './distancias.model';
 
 @model()
 export class Parada extends Entity {
@@ -32,9 +32,6 @@ export class Parada extends Entity {
   @belongsTo(() => Ciudad)
   ciudadId: number;
 
-  @belongsTo(() => Distancias, {name: 'distancia'})
-  distanciasId: number;
-
   @property({
     type: 'number',
   })
@@ -42,6 +39,14 @@ export class Parada extends Entity {
 
   @hasMany(() => Viaje)
   viaje: Viaje[];
+
+  @property({
+    type: 'number',
+  })
+  distanciasId?: number;
+
+  @hasMany(() => Distancias)
+  distancia: Distancias[];
 
   constructor(data?: Partial<Parada>) {
     super(data);
