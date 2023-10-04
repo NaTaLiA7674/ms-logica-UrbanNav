@@ -1,9 +1,32 @@
 import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {Ciudad} from './ciudad.model';
-import {Viaje} from './viaje.model';
 import {Distancias} from './distancias.model';
+import {Viaje} from './viaje.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_parada_ciudadId: {
+        name: 'fk_parada_ciudadId',
+        entity: 'Ciudad',
+        entityKey: 'id',
+        foreignKey: 'ciudadId',
+      },
+      fk_parada_idPuntoOrigen: {
+        name: 'fk_parada_idPuntoOrigen',
+        entity: 'Parada',
+        entityKey: 'id',
+        foreignKey: 'idPuntoOrigen',
+      },
+      fk_parada_distanciasId: {
+        name: 'fk_parada_distanciasId',
+        entity: 'Distancias',
+        entityKey: 'id',
+        foreignKey: 'distanciasId',
+      },
+    },
+  },
+})
 export class Parada extends Entity {
   @property({
     type: 'number',

@@ -1,11 +1,28 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Vehiculo} from './vehiculo.model';
-import {Licencia} from './licencia.model';
-import {Viaje} from './viaje.model';
-import {EstadoConductor} from './estado-conductor.model';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {BloqueoConductor} from './bloqueo-conductor.model';
+import {EstadoConductor} from './estado-conductor.model';
+import {Licencia} from './licencia.model';
+import {Vehiculo} from './vehiculo.model';
+import {Viaje} from './viaje.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_conductor_vehiculoId: {
+        name: 'fk_conductor_vehiculoId',
+        entity: 'Vehiculo',
+        entityKey: 'id',
+        foreignKey: 'vehiculoId',
+      },
+      fk_conductor_licenciaId: {
+        name: 'fk_conductor_licenciaId',
+        entity: 'Licencia',
+        entityKey: 'id',
+        foreignKey: 'licenciaId',
+      },
+    },
+  },
+})
 export class Conductor extends Entity {
   @property({
     type: 'number',

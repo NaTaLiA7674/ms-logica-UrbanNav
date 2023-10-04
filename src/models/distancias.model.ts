@@ -1,7 +1,18 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Parada} from './parada.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_distancias_paradaId: {
+        name: 'fk_distancias_paradaId',
+        entity: 'Parada',
+        entityKey: 'id',
+        foreignKey: 'paradaId',
+      },
+    },
+  },
+})
 export class Distancias extends Entity {
   @property({
     type: 'number',

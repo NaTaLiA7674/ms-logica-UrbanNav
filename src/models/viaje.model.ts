@@ -1,13 +1,54 @@
-import {Entity, belongsTo, model, property, hasMany} from '@loopback/repository';
-import {Cliente} from './cliente.model';
-import {CalificacionConductor} from './calificacion-conductor.model';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {CalificacionCliente} from './calificacion-cliente.model';
-import {Factura} from './factura.model';
+import {CalificacionConductor} from './calificacion-conductor.model';
+import {Cliente} from './cliente.model';
 import {Conductor} from './conductor.model';
 import {EstadoViaje} from './estado-viaje.model';
+import {Factura} from './factura.model';
 import {Parada} from './parada.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_viaje_clienteId: {
+        name: 'fk_viaje_clienteId',
+        entity: 'Cliente',
+        entityKey: 'id',
+        foreignKey: 'clienteId',
+      },
+      fk_viaje_calificacion_conductorId: {
+        name: 'fk_viaje_calificacion_conductorId',
+        entity: 'CalificacionConductor',
+        entityKey: 'id',
+        foreignKey: 'calificacionConductorId',
+      },
+      fk_viaje_calificacion_clienteId: {
+        name: 'fk_viaje_calificacion_clienteId',
+        entity: 'CalificacionCliente',
+        entityKey: 'id',
+        foreignKey: 'calificacionClienteId',
+      },
+      fk_viaje_facturaId: {
+        name: 'fk_viaje_facturaId',
+        entity: 'Factura',
+        entityKey: 'id',
+        foreignKey: 'facturaId',
+      },
+      fk_viaje_conductorId: {
+        name: 'fk_viaje_conductorId',
+        entity: 'Conductor',
+        entityKey: 'id',
+        foreignKey: 'conductorId',
+      },
+      fk_viaje_paradaId: {
+        name: 'fk_viaje_paradaId',
+        entity: 'Parada',
+        entityKey: 'id',
+        foreignKey: 'paradaId',
+      },
+    },
+  },
+})
 export class Viaje extends Entity {
   @property({
     type: 'number',

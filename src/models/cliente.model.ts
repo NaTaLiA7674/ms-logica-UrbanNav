@@ -1,10 +1,21 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {Viaje} from './viaje.model';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {BloqueoCliente} from './bloqueo-cliente.model';
 import {Factura} from './factura.model';
 import {MedioPago} from './medio-pago.model';
-import {BloqueoCliente} from './bloqueo-cliente.model';
+import {Viaje} from './viaje.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_cliente_medio_pagoId: {
+        name: 'fk_cliente_medio_pagoId',
+        entity: 'MedioPago',
+        entityKey: 'id',
+        foreignKey: 'medioPagoId',
+      },
+    },
+  },
+})
 export class Cliente extends Entity {
   @property({
     type: 'number',
