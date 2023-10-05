@@ -52,3 +52,4 @@ export * from './medio-pago.controller';
 export * from './parada.controller';
 export * from './vehiculo.controller';
 export * from './viaje.controller';
+export * from './solicitud-viaje.controller';
