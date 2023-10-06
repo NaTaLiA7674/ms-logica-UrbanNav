@@ -8,7 +8,7 @@ export class SolicitudViajeService {
   public destinoId: number
   public clienteId: any
   public informacionAdicional: any
-  constructor() {}
+  constructor() { }
 
   async crearSolicitudViaje(origenId: any, destinoId: number, clienteId: any, informacionAdicional: any) {
     const origen = ParadaService.obtenerParadaPorId(origenId);
@@ -16,6 +16,7 @@ export class SolicitudViajeService {
     const distanciasEntreParadas = ParadaService.obtenerDistanciasEntreParadas(origenId, destinoId);
     const distanciaTotal = ParadaService.calcularDistanciaTotal(distanciasEntreParadas);
 
+    //Esto va en la parte de facturas
     const precioPorKilometro = 1.5; // Precio por kilómetro recorrido (puedes ajustarlo según tus necesidades)
     const costoViaje = distanciaTotal * precioPorKilometro;
 

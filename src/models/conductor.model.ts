@@ -4,6 +4,8 @@ import {EstadoConductor} from './estado-conductor.model';
 import {Licencia} from './licencia.model';
 import {Vehiculo} from './vehiculo.model';
 import {Viaje} from './viaje.model';
+import {CalificacionCliente} from './calificacion-cliente.model';
+import {CalificacionConductor} from './calificacion-conductor.model';
 
 @model({
   settings: {
@@ -67,6 +69,12 @@ export class Conductor extends Entity {
 
   @hasMany(() => BloqueoConductor)
   bloqueoConductor: BloqueoConductor[];
+
+  @hasMany(() => CalificacionCliente)
+  calificacionCliente: CalificacionCliente[];
+
+  @hasMany(() => CalificacionConductor)
+  calificacionConductor: CalificacionConductor[];
 
   constructor(data?: Partial<Conductor>) {
     super(data);

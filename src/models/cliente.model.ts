@@ -3,6 +3,8 @@ import {BloqueoCliente} from './bloqueo-cliente.model';
 import {Factura} from './factura.model';
 import {MedioPago} from './medio-pago.model';
 import {Viaje} from './viaje.model';
+import {CalificacionCliente} from './calificacion-cliente.model';
+import {CalificacionConductor} from './calificacion-conductor.model';
 
 @model({
   settings: {
@@ -62,6 +64,12 @@ export class Cliente extends Entity {
 
   @hasMany(() => BloqueoCliente)
   bloqueoCliente: BloqueoCliente[];
+
+  @hasMany(() => CalificacionCliente)
+  calificacionCliente: CalificacionCliente[];
+
+  @hasMany(() => CalificacionConductor)
+  calificacionConductor: CalificacionConductor[];
 
   constructor(data?: Partial<Cliente>) {
     super(data);

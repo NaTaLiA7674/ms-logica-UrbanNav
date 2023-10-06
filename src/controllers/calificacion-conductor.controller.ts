@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,32 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
 import {CalificacionConductor} from '../models';
-import {CalificacionConductorRepository} from '../repositories';
+import {CalificacionConductorRepository, ClienteRepository, ConductorRepository} from '../repositories';
+import {CalificarAlClienteService} from '../services';
 
 export class CalificacionConductorController {
   constructor(
     @repository(CalificacionConductorRepository)
-    public calificacionConductorRepository : CalificacionConductorRepository,
-  ) {}
+    public calificacionConductorRepository: CalificacionConductorRepository,
+    @repository(ClienteRepository)
+    public ClienteRepository: ClienteRepository,
+    @repository(ConductorRepository)
+    public conductorRepository: ConductorRepository,
+    @service(CalificarAlClienteService)
+    public calificarAlClienteService: CalificarAlClienteService,
+  ) { }
 
   @post('/calificacion-conductor')
   @response(200, {
@@ -138,6 +147,32 @@ export class CalificacionConductorController {
     @requestBody() calificacionConductor: CalificacionConductor,
   ): Promise<void> {
     await this.calificacionConductorRepository.replaceById(id, calificacionConductor);
+  }
+
+  @post('/calificaciones/{id}/calificar-cliente')
+  async calificarCliente(
+    @param.path.number('id') id: number,
+    @requestBody() calificacion: CalificacionConductor,
+  ): Promise<CalificacionConductor> {
+    try {
+      // Obtén los datos necesarios del cliente y del conductor, por ejemplo, utilizando servicios o repositorios
+      const cliente = await this.ClienteRepository.findById(calificacion.clienteId);
+      const conductor = await this.conductorRepository.findById(calificacion.conductorId);
+
+      // Llama al servicio para calificar y dejar comentarios
+      const calificacionGuardada = await this.calificarAlClienteService.crearCalificacionAlCliente(calificacion, cliente, conductor);
+
+      return calificacionGuardada;
+    } catch (error) {
+      //Manejo de errores
+      console.error('Error al calificar al cliente:', error);
+
+      if (error instanceof HttpErrors.BadRequest) {
+        throw new HttpErrors.BadRequest('No se pudo calificar al cliente: ' + error.message);
+      } else {
+        throw new HttpErrors.InternalServerError('Hubo un problema al calificar al cliente');
+      }
+    }
   }
 
   @del('/calificacion-conductor/{id}')

@@ -1,5 +1,7 @@
 import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {Viaje} from './viaje.model';
+import {Cliente} from './cliente.model';
+import {Conductor} from './conductor.model';
 
 @model({
   settings: {
@@ -31,7 +33,7 @@ export class CalificacionConductor extends Entity {
     type: 'date',
     required: true,
   })
-  fecha: string;
+  fecha: Date;
 
   @property({
     type: 'string',
@@ -41,6 +43,12 @@ export class CalificacionConductor extends Entity {
 
   @belongsTo(() => Viaje)
   viajeId: number;
+
+  @belongsTo(() => Cliente)
+  clienteId: number;
+
+  @belongsTo(() => Conductor)
+  conductorId: number;
 
   constructor(data?: Partial<CalificacionConductor>) {
     super(data);
