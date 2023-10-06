@@ -1,7 +1,7 @@
 import {Entity, belongsTo, model, property} from '@loopback/repository';
-import {Viaje} from './viaje.model';
 import {Cliente} from './cliente.model';
 import {Conductor} from './conductor.model';
+import {Viaje} from './viaje.model';
 
 @model({
   settings: {
@@ -11,6 +11,18 @@ import {Conductor} from './conductor.model';
         entity: 'Viaje',
         entityKey: 'id',
         foreignKey: 'viajeId'
+      },
+      fk_calificacion_cliente_clienteId: {
+        name: 'fk_calificacion_cliente_clienteId',
+        entity: 'Cliente',
+        entityKey: 'id',
+        foreignKey: 'clienteId'
+      },
+      fk_calificacion_cliente_conductorId: {
+        name: 'fk_calificacion_cliente_conductorId',
+        entity: 'Conductor',
+        entityKey: 'id',
+        foreignKey: 'conductorId'
       }
     }
   }
