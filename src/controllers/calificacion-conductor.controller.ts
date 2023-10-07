@@ -149,9 +149,8 @@ export class CalificacionConductorController {
     await this.calificacionConductorRepository.replaceById(id, calificacionConductor);
   }
 
-  @post('/calificaciones/{id}/calificar-cliente')
+  @post('/calificaciones/calificar-cliente')
   async calificarCliente(
-    @param.path.number('id') id: number,
     @requestBody() calificacion: CalificacionConductor,
   ): Promise<CalificacionConductor> {
     try {

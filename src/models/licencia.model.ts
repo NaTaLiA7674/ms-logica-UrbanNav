@@ -21,8 +21,6 @@ export class Licencia extends Entity {
   })
   id?: number;
 
-  //Realizar la relacion con el modelo Conductor para nombre y apellido
-
   @property({
     type: 'date',
     required: true,

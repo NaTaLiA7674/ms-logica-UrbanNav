@@ -16,24 +16,6 @@ import {Parada} from './parada.model';
         entityKey: 'id',
         foreignKey: 'clienteId',
       },
-      fk_viaje_calificacion_conductorId: {
-        name: 'fk_viaje_calificacion_conductorId',
-        entity: 'CalificacionConductor',
-        entityKey: 'id',
-        foreignKey: 'calificacionConductorId',
-      },
-      fk_viaje_calificacion_clienteId: {
-        name: 'fk_viaje_calificacion_clienteId',
-        entity: 'CalificacionCliente',
-        entityKey: 'id',
-        foreignKey: 'calificacionClienteId',
-      },
-      fk_viaje_facturaId: {
-        name: 'fk_viaje_facturaId',
-        entity: 'Factura',
-        entityKey: 'id',
-        foreignKey: 'facturaId',
-      },
       fk_viaje_conductorId: {
         name: 'fk_viaje_conductorId',
         entity: 'Conductor',
