@@ -22,7 +22,7 @@ export class Ciudad extends Entity {
   })
   codigoPostal: string;
 
-  @hasMany(() => Parada)
+  @hasMany(() => Parada, {keyTo: 'ubicacionId'})
   parada: Parada[];
 
   constructor(data?: Partial<Ciudad>) {

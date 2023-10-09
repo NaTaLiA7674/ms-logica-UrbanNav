@@ -33,6 +33,6 @@ export class ParadaCiudadController {
   async getCiudad(
     @param.path.number('id') id: typeof Parada.prototype.id,
   ): Promise<Ciudad> {
-    return this.paradaRepository.ciudad(id);
+    return this.paradaRepository.ubicacion(id);
   }
 }

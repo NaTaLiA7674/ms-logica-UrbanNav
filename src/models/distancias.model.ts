@@ -1,14 +1,20 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
+import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {Parada} from './parada.model';
 
 @model({
   settings: {
     foreignKeys: {
-      fk_distancias_paradaId: {
-        name: 'fk_distancias_paradaId',
+      fk_distancia_origenId: {
+        name: 'fk_distancia_origenId',
         entity: 'Parada',
         entityKey: 'id',
-        foreignKey: 'paradaId',
+        foreignKey: 'origenId',
+      },
+      fk_distancia_destinoId: {
+        name: 'fk_distancia_destinoId',
+        entity: 'Parada',
+        entityKey: 'id',
+        foreignKey: 'destinoId',
       },
     },
   },
@@ -22,18 +28,6 @@ export class Distancias extends Entity {
   id?: number;
 
   @property({
-    type: 'string',
-    required: true,
-  })
-  origen: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  destino: string;
-
-  @property({
     type: 'number',
     required: true,
   })
@@ -41,12 +35,14 @@ export class Distancias extends Entity {
 
   @property({
     type: 'number',
-    required: true,
   })
-  tiempoEstimado: number;
+  tiempoEstimado?: number;
 
-  @hasMany(() => Parada)
-  parada: Parada[];
+  @belongsTo(() => Parada)
+  origenId: number;
+
+  @belongsTo(() => Parada)
+  destinoId: number;
 
   @property({
     type: 'number',

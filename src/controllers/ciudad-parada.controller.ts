@@ -61,7 +61,7 @@ export class CiudadParadaController {
           schema: getModelSchemaRef(Parada, {
             title: 'NewParadaInCiudad',
             exclude: ['id'],
-            optional: ['ciudadId']
+            optional: ['ubicacionId']
           }),
         },
       },

@@ -12,7 +12,8 @@ export class ParadaRepository extends DefaultCrudRepository<
   ParadaRelations
 > {
 
-  public readonly ciudad: BelongsToAccessor<Ciudad, typeof Parada.prototype.id>;
+
+  public readonly ubicacion: BelongsToAccessor<Ciudad, typeof Parada.prototype.id>;
 
   public readonly viaje: HasManyRepositoryFactory<Viaje, typeof Parada.prototype.id>;
 
@@ -26,7 +27,7 @@ export class ParadaRepository extends DefaultCrudRepository<
     this.registerInclusionResolver('distancia', this.distancia.inclusionResolver);
     this.viaje = this.createHasManyRepositoryFactoryFor('viaje', viajeRepositoryGetter,);
     this.registerInclusionResolver('viaje', this.viaje.inclusionResolver);
-    this.ciudad = this.createBelongsToAccessorFor('ciudad', ciudadRepositoryGetter,);
-    this.registerInclusionResolver('ciudad', this.ciudad.inclusionResolver);
+    this.ubicacion = this.createBelongsToAccessorFor('ubicacion', ciudadRepositoryGetter,);
+    this.registerInclusionResolver('ubicacion', this.ubicacion.inclusionResolver);
   }
 }

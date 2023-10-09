@@ -22,11 +22,17 @@ import {Parada} from './parada.model';
         entityKey: 'id',
         foreignKey: 'conductorId',
       },
-      fk_viaje_paradaId: {
-        name: 'fk_viaje_paradaId',
+      fk_viaje_puntoOrigenId: {
+        name: 'fk_viaje_puntoOrigenId',
         entity: 'Parada',
         entityKey: 'id',
-        foreignKey: 'paradaId',
+        foreignKey: 'puntoOrigenId',
+      },
+      fk_viaje_puntoDestinoId: {
+        name: 'fk_viaje_puntoDestinoId',
+        entity: 'Parada',
+        entityKey: 'id',
+        foreignKey: 'puntoDestinoId',
       },
     },
   },
@@ -38,18 +44,6 @@ export class Viaje extends Entity {
     generated: true,
   })
   id?: number;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  origen: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  destino: string;
 
   @property({
     type: 'number',
@@ -81,8 +75,11 @@ export class Viaje extends Entity {
   @hasMany(() => EstadoViaje)
   estadoViaje: EstadoViaje[];
 
-  @hasMany(() => Parada, {keyTo: 'idPuntoOrigen'})
-  idPuntoDestino: Parada[];
+  @belongsTo(() => Parada)
+  puntoOrigenId: number;
+
+  @belongsTo(() => Parada)
+  puntoDestinoId: number;
 
   @property({
     type: 'number',
