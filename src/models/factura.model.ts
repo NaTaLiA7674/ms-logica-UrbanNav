@@ -12,18 +12,6 @@ import {Viaje} from './viaje.model';
         entityKey: 'id',
         foreignKey: 'viajeId',
       },
-      fk_factura_medio_pagoId: {
-        name: 'fk_factura_medio_pagoId',
-        entity: 'MedioPago',
-        entityKey: 'id',
-        foreignKey: 'medioPagoId',
-      },
-      fk_factura_clienteId: {
-        name: 'fk_factura_clienteId',
-        entity: 'Cliente',
-        entityKey: 'id',
-        foreignKey: 'clienteId',
-      },
     },
   },
 })
@@ -34,12 +22,6 @@ export class Factura extends Entity {
     generated: true,
   })
   id?: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  montoTotal: number;
 
   @property({
     type: 'date',
