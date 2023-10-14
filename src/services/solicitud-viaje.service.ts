@@ -25,7 +25,7 @@ export class SolicitudViajeService {
 
     // Verificar si la solicitud está pendiente y el conductor no está asignado a otra solicitud
     if (solicitud.estado !== 'pendiente' || solicitud.conductorId) {
-      throw new Error('La solicitud ya ha sido asignada o no está pendiente');
+      throw new Error('La solicitud ya ha sido asignada o no esta pendiente');
     }
 
     // Crear un nuevo estado de viaje para representar la asignación del conductor
