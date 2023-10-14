@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -18,6 +19,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {CalificacionConductor} from '../models';
 import {CalificacionConductorRepository, ClienteRepository, ConductorRepository} from '../repositories';
 
@@ -31,6 +33,10 @@ export class CalificacionConductorController {
     public conductorRepository: ConductorRepository,
   ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.guardarAccion],
+  })
   @post('/calificacion-conductor')
   @response(200, {
     description: 'CalificacionConductor model instance',
@@ -84,6 +90,10 @@ export class CalificacionConductorController {
     return this.calificacionConductorRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/calificacion-conductor')
   @response(200, {
     description: 'CalificacionConductor PATCH success count',
@@ -103,6 +113,10 @@ export class CalificacionConductorController {
     return this.calificacionConductorRepository.updateAll(calificacionConductor, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.descargarAccion],
+  })
   @get('/calificacion-conductor/{id}')
   @response(200, {
     description: 'CalificacionConductor model instance',
@@ -148,6 +162,10 @@ export class CalificacionConductorController {
     await this.calificacionConductorRepository.replaceById(id, calificacionConductor);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.eliminarAccion],
+  })
   @del('/calificacion-conductor/{id}')
   @response(204, {
     description: 'CalificacionConductor DELETE success',
@@ -155,4 +173,30 @@ export class CalificacionConductorController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.calificacionConductorRepository.deleteById(id);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.listarAccion],
+  })
+  @get('/calificacion-conductor/{clienteId}')
+  @response(200, {
+    description: 'Array of CalificacionCliente model instances for a specific cliente',
+    content: {
+      'application/json': {
+        schema: {type: 'array', items: getModelSchemaRef(CalificacionConductor, {includeRelations: true})},
+      },
+    },
+  })
+  async findCalificacionesPorCliente(
+    @param.path.number('clienteId') clienteId: number,
+    @param.filter(CalificacionConductor) filter?: Filter<CalificacionConductor>,
+  ): Promise<CalificacionConductor[]> {
+    // Obtener todas las calificaciones dejadas al cliente específico
+    const calificaciones = await this.calificacionConductorRepository.find({
+      where: {clienteId: clienteId}, // Asumiendo que tienes una propiedad "clienteId" en el modelo CalificacionCliente que vincula al cliente
+    }, filter);
+
+    return calificaciones;
+  }
+
 }

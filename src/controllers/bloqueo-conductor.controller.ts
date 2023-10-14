@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,30 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {BloqueoConductor} from '../models';
 import {BloqueoConductorRepository} from '../repositories';
 
 export class BloqueoConductorController {
   constructor(
     @repository(BloqueoConductorRepository)
-    public bloqueoConductorRepository : BloqueoConductorRepository,
-  ) {}
+    public bloqueoConductorRepository: BloqueoConductorRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/bloqueo-conductor')
   @response(200, {
     description: 'BloqueoConductor model instance',
@@ -58,6 +64,10 @@ export class BloqueoConductorController {
     return this.bloqueoConductorRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/bloqueo-conductor')
   @response(200, {
     description: 'Array of BloqueoConductor model instances',
@@ -76,6 +86,10 @@ export class BloqueoConductorController {
     return this.bloqueoConductorRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/bloqueo-conductor')
   @response(200, {
     description: 'BloqueoConductor PATCH success count',
@@ -95,6 +109,10 @@ export class BloqueoConductorController {
     return this.bloqueoConductorRepository.updateAll(bloqueoConductor, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.descargarAccion]
+  })
   @get('/bloqueo-conductor/{id}')
   @response(200, {
     description: 'BloqueoConductor model instance',
@@ -140,6 +158,10 @@ export class BloqueoConductorController {
     await this.bloqueoConductorRepository.replaceById(id, bloqueoConductor);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/bloqueo-conductor/{id}')
   @response(204, {
     description: 'BloqueoConductor DELETE success',

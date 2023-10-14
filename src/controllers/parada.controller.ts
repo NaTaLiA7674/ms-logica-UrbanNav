@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,30 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Parada} from '../models';
 import {ParadaRepository} from '../repositories';
 
 export class ParadaController {
   constructor(
     @repository(ParadaRepository)
-    public paradaRepository : ParadaRepository,
-  ) {}
+    public paradaRepository: ParadaRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.guardarAccion],
+  })
   @post('/parada')
   @response(200, {
     description: 'Parada model instance',
@@ -58,6 +64,10 @@ export class ParadaController {
     return this.paradaRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.listarAccion],
+  })
   @get('/parada')
   @response(200, {
     description: 'Array of Parada model instances',
@@ -76,6 +86,10 @@ export class ParadaController {
     return this.paradaRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/parada')
   @response(200, {
     description: 'Parada PATCH success count',
@@ -95,6 +109,10 @@ export class ParadaController {
     return this.paradaRepository.updateAll(parada, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.descargarAccion],
+  })
   @get('/parada/{id}')
   @response(200, {
     description: 'Parada model instance',
@@ -140,6 +158,10 @@ export class ParadaController {
     await this.paradaRepository.replaceById(id, parada);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.eliminarAccion],
+  })
   @del('/parada/{id}')
   @response(204, {
     description: 'Parada DELETE success',

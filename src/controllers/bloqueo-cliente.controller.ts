@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,30 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {BloqueoCliente} from '../models';
 import {BloqueoClienteRepository} from '../repositories';
 
 export class BloqueoClienteController {
   constructor(
     @repository(BloqueoClienteRepository)
-    public bloqueoClienteRepository : BloqueoClienteRepository,
-  ) {}
+    public bloqueoClienteRepository: BloqueoClienteRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/bloqueo-cliente')
   @response(200, {
     description: 'BloqueoCliente model instance',
@@ -58,6 +64,10 @@ export class BloqueoClienteController {
     return this.bloqueoClienteRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/bloqueo-cliente')
   @response(200, {
     description: 'Array of BloqueoCliente model instances',
@@ -76,6 +86,10 @@ export class BloqueoClienteController {
     return this.bloqueoClienteRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/bloqueo-cliente')
   @response(200, {
     description: 'BloqueoCliente PATCH success count',
@@ -95,6 +109,10 @@ export class BloqueoClienteController {
     return this.bloqueoClienteRepository.updateAll(bloqueoCliente, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.descargarAccion]
+  })
   @get('/bloqueo-cliente/{id}')
   @response(200, {
     description: 'BloqueoCliente model instance',
@@ -140,6 +158,10 @@ export class BloqueoClienteController {
     await this.bloqueoClienteRepository.replaceById(id, bloqueoCliente);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/bloqueo-cliente/{id}')
   @response(204, {
     description: 'BloqueoCliente DELETE success',

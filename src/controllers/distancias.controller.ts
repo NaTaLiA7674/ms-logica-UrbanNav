@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,30 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Distancias} from '../models';
 import {DistanciasRepository} from '../repositories';
 
 export class DistanciasController {
   constructor(
     @repository(DistanciasRepository)
-    public distanciasRepository : DistanciasRepository,
-  ) {}
+    public distanciasRepository: DistanciasRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/distancias')
   @response(200, {
     description: 'Distancias model instance',
@@ -58,6 +64,10 @@ export class DistanciasController {
     return this.distanciasRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/distancias')
   @response(200, {
     description: 'Array of Distancias model instances',
@@ -76,6 +86,10 @@ export class DistanciasController {
     return this.distanciasRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/distancias')
   @response(200, {
     description: 'Distancias PATCH success count',
@@ -95,6 +109,10 @@ export class DistanciasController {
     return this.distanciasRepository.updateAll(distancias, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.descargarAccion]
+  })
   @get('/distancias/{id}')
   @response(200, {
     description: 'Distancias model instance',
@@ -140,6 +158,10 @@ export class DistanciasController {
     await this.distanciasRepository.replaceById(id, distancias);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/distancias/{id}')
   @response(204, {
     description: 'Distancias DELETE success',

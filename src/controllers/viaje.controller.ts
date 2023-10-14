@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -17,14 +18,15 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Viaje} from '../models';
 import {ViajeRepository} from '../repositories';
 
 export class ViajeController {
   constructor(
     @repository(ViajeRepository)
-    public viajeRepository : ViajeRepository,
-  ) {}
+    public viajeRepository: ViajeRepository,
+  ) { }
 
   @post('/viaje')
   @response(200, {
@@ -147,4 +149,42 @@ export class ViajeController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.viajeRepository.deleteById(id);
   }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuHistorialViajesId, ConfiguracionSeguridad.listarAccion],
+  })
+  @get('/viajes-cliente/{clienteId}')
+  @response(200, {
+    description: 'Viaje model instances for a specific cliente',
+    content: {
+      'application/json': {
+        schema: {type: 'array', items: getModelSchemaRef(Viaje, {includeRelations: true})},
+      },
+    },
+  })
+  async findViajesPorCliente(
+    @param.path.number('clienteId') clienteId: number,
+    @param.filter(Viaje, {exclude: 'where'}) filter?: FilterExcludingWhere<Viaje>,
+  ): Promise<Viaje[]> {
+    // Obtener los viajes realizados por el cliente específico
+    const viajes = await this.viajeRepository.find({
+      where: {clienteId: clienteId}, // Asumiendo que tienes una propiedad "clienteId" en el modelo Viaje que vincula al cliente
+    }, filter);
+
+    return viajes;
+  }
+
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuHistorialViajesId, ConfiguracionSeguridad.eliminarAccion],
+  })
+  @del('/viajes-cliente/{clienteId}')
+  @response(204, {
+    description: 'Viaje DELETE success',
+  })
+  async deleteViajesPorCliente(@param.path.number('clienteId') clienteId: number): Promise<void> {
+    await this.viajeRepository.deleteAll({clienteId: clienteId});
+  }
+
 }

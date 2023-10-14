@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -18,6 +19,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {CalificacionCliente} from '../models';
 import {CalificacionClienteRepository, ClienteRepository, ConductorRepository} from '../repositories';
 
@@ -31,6 +33,11 @@ export class CalificacionClienteController {
     public conductorRepository: ConductorRepository,
   ) { }
 
+
+  @authenticate({
+    strategy: "auth",
+    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.guardarAccion]
+  })
   @post('/calificacion-cliente')
   @response(200, {
     description: 'CalificacionCliente model instance',
@@ -84,6 +91,10 @@ export class CalificacionClienteController {
     return this.calificacionClienteRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: "auth",
+    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/calificacion-cliente')
   @response(200, {
     description: 'CalificacionCliente PATCH success count',
@@ -103,6 +114,10 @@ export class CalificacionClienteController {
     return this.calificacionClienteRepository.updateAll(calificacionCliente, where);
   }
 
+  @authenticate({
+    strategy: "auth",
+    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.descargarAccion]
+  })
   @get('/calificacion-cliente/{id}')
   @response(200, {
     description: 'CalificacionCliente model instance',
@@ -148,6 +163,10 @@ export class CalificacionClienteController {
     await this.calificacionClienteRepository.replaceById(id, calificacionCliente);
   }
 
+  @authenticate({
+    strategy: "auth",
+    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/calificacion-cliente/{conductorId}')
   @response(200, {
     description: 'CalificacionCliente model instances for a specific conductor',
@@ -170,6 +189,10 @@ export class CalificacionClienteController {
   }
 
 
+  @authenticate({
+    strategy: "auth",
+    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.eliminarAccion]
+  })
   @del('/calificacion-cliente/{id}')
   @response(204, {
     description: 'CalificacionCliente DELETE success',
