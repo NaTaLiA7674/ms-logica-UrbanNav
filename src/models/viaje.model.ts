@@ -85,6 +85,7 @@ export class Viaje extends Entity {
     type: 'number',
   })
   paradaId?: number;
+  estado: string;
 
   constructor(data?: Partial<Viaje>) {
     super(data);
