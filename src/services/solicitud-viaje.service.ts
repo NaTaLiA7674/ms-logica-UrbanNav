@@ -1,6 +1,5 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import * as dijkstrajs from 'dijkstrajs';
 import * as graphlib from 'graphlib';
 import {Conductor, EstadoViaje, Viaje} from '../models';
 import {ClienteRepository, ConductorRepository, DistanciasRepository, EstadoViajeRepository, ParadaRepository, ViajeRepository} from '../repositories';
@@ -23,7 +22,7 @@ export class SolicitudViajeService {
   ) { }
 
 
-//Función para crear una solicitud de viaje usando todos las funciones creadas en el servicio de solicitud de viaje, teniendo en cuenta la conexion a la base de datos mysql
+  //Función para crear una solicitud de viaje usando todos las funciones creadas en el servicio de solicitud de viaje, teniendo en cuenta la conexion a la base de datos mysql
   async crearSolicitudViaje(viaje: Viaje): Promise<Viaje> {
     // Crear una nueva solicitud de viaje en la base de datos
     const nuevaSolicitud = await this.viajeRepository.create(viaje);
@@ -101,83 +100,96 @@ export class SolicitudViajeService {
   }
 
 
-  //Función para obtener el camino más corto entre el origen y el destino del modelo viaje usando dijkstra
-  async obtenerRutaMasCorta(origen: string, destino: string): Promise<void> {
-    //Convertir origen y destino a numeros
+  // Función para obtener el camino más corto entre el origen y el destino del modelo viaje
+  async obtenerRutaMasCorta(origen: string, destino: string): Promise<string[]> {
+    // Convertir origen y destino a números
     const origenNumero = Number(origen);
     const destinoNumero = Number(destino);
-    //Obtener el viaje desde el modelo de viaje
+
+    // Obtener el viaje desde el modelo de viaje
     const viaje = await this.viajeRepository.findOne({where: {puntoOrigenId: origenNumero, puntoDestinoId: destinoNumero}});
 
     if (!viaje) {
       throw new Error('Viaje no encontrado');
     }
 
-    //Obtener el grafo dirigido previamente creado
-    const grafo = await this.crearGrafoViajes(); //Reutiliza la función anterior
+    // Obtener el grafo dirigido previamente creado
+    const grafo = await this.crearGrafoViajes(); // Reutiliza la función anterior
 
-    //Obtener la ruta más corta desde el origen hasta el destino utilizando dijkstrajs
-    const rutaMasCorta = dijkstrajs.find_path(grafo, origen, destino);
+    // Lógica para encontrar la ruta más corta
+    const visitados: {[key: string]: boolean} = {};
+    const distancia: {[key: string]: number} = {};
+    const ruta: {[key: string]: string} = {};
 
-    if (!rutaMasCorta) {
-      throw new Error('No se encontró una ruta desde el origen al destino');
+    for (const nodo of grafo.nodes()) {
+      distancia[nodo] = Number.MAX_SAFE_INTEGER;
     }
 
-    //Calcular el kilometraje recorrido en la ruta más corta usando la variable kmRecorrido del modelo de viaje
-    let kmRecorrido = 0;
-    for (let i = 0; i < rutaMasCorta.length - 1; i++) {
-      const origen = rutaMasCorta[i];
-      const destino = rutaMasCorta[i + 1];
-      const peso = grafo.edge(origen, destino);
-      kmRecorrido += Number(peso);
+    distancia[origen] = 0;
+
+    for (let i = 0; i < grafo.nodeCount(); i++) {
+      const nodoActual = await this.encontrarNodoNoVisitadoConMenorDistancia(grafo, visitados, distancia);
+      visitados[nodoActual] = true;
+
+      const vecinos = await grafo.successors(nodoActual); // Espera a que se resuelva la Promesa
+
+      if (!Array.isArray(vecinos)) {
+        throw new Error('Los vecinos no son una matriz de cadenas.');
+      }
+
+      for (const vecino of vecinos) {
+        const peso = grafo.edge(nodoActual, vecino);
+        const distanciaAcumulada = distancia[nodoActual] + peso;
+        if (distanciaAcumulada < distancia[vecino]) {
+          distancia[vecino] = distanciaAcumulada;
+          ruta[vecino] = nodoActual;
+        }
+      }
     }
 
-    //Actualizar el atributo kmRecorrido del modelo de viaje
+    const rutaMasCorta = await this.reconstruirRuta(origen, destino, ruta);
+    const kmRecorrido = distancia[destino];
+
+    // Actualizar el atributo kmRecorrido del modelo de viaje
     viaje.kmRecorrido = kmRecorrido;
     console.log(`Ruta más favorable de ${origen} a ${destino}: ${rutaMasCorta.join(' -> ')}`);
     console.log(`Kilometraje recorrido: ${kmRecorrido}`);
+    console.log(`Precio del viaje: ${kmRecorrido * 1000}`);
+
+    return rutaMasCorta;
   }
 
 
-//funcion para obtener el precio del viaje, se reutiliza la funcion anterior de obtener ruta mas corta, se reutiliza la funcion de calcular el kilometraje recorrido, valor por km = 1000
-  async obtenerPrecio(origen: string, destino: string): Promise<void> {
-    //Convertir origen y destino a numeros
-    const origenNumero = Number(origen);
-    const destinoNumero = Number(destino);
-    //Obtener el viaje desde el modelo de viaje
-    const viaje = await this.viajeRepository.findOne({where: {puntoOrigenId: origenNumero, puntoDestinoId: destinoNumero}});
+  async encontrarNodoNoVisitadoConMenorDistancia(grafo: any, visitados: any, distancia: any): Promise<string> {
+    let minDistancia = Number.MAX_SAFE_INTEGER;
+    let nodoConMinDistancia: string | null = null;
 
-    if (!viaje) {
-      throw new Error('Viaje no encontrado');
+    for (const nodo of grafo.nodes()) {
+      if (!visitados[nodo] && distancia[nodo] < minDistancia) {
+        minDistancia = distancia[nodo];
+        nodoConMinDistancia = nodo;
+      }
     }
 
-    //Obtener el grafo dirigido previamente creado
-    const grafo = await this.crearGrafoViajes(); //Reutiliza la función anterior
-
-    //Obtener la ruta más corta desde el origen hasta el destino utilizando dijkstrajs
-    const rutaMasCorta = dijkstrajs.find_path(grafo, origen, destino);
-
-    if (!rutaMasCorta) {
+    if (nodoConMinDistancia) {
+      return nodoConMinDistancia;
+    } else {
       throw new Error('No se encontró una ruta desde el origen al destino');
     }
-
-    //Calcular el kilometraje recorrido en la ruta más corta usando la variable kmRecorrido del modelo de viaje
-    let kmRecorrido = 0;
-    for (let i = 0; i < rutaMasCorta.length - 1; i++) {
-      const origen = rutaMasCorta[i];
-      const destino = rutaMasCorta[i + 1];
-      const peso = grafo.edge(origen, destino);
-      kmRecorrido += Number(peso);
-    }
-
-    //Actualizar el atributo kmRecorrido del modelo de viaje
-    viaje.kmRecorrido = kmRecorrido;
-
-    console.log(`Ruta más favorable de ${origen} a ${destino}: ${rutaMasCorta.join(' -> ')}`);
-    console.log(`Kilometraje recorrido: ${kmRecorrido}`);
-    console.log(`Precio del viaje: ${kmRecorrido*1000}`);
   }
 
+  async reconstruirRuta(origen: string, destino: string, ruta: any): Promise<string[]> {
+    const rutaMasCorta: string[] = [];
+    let nodoActual = destino;
+
+    while (nodoActual !== origen) {
+      rutaMasCorta.unshift(nodoActual);
+      nodoActual = ruta[nodoActual];
+    }
+
+    rutaMasCorta.unshift(origen);
+    return rutaMasCorta;
+  }
 
   //Funcionalidad de botón de pánico que envía un mensaje de alerta a un contacto de emergencia configurado en el modelo del cliente
   async enviarAlertaPanic(clienteId: number): Promise<void> {

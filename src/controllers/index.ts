@@ -57,4 +57,10 @@ export * from './viaje-estado-viaje.controller';
 export * from './viaje-factura.controller';
 export * from './viaje-parada.controller';
 export * from './viaje.controller';
-
+export * from './cliente-boton-panico.controller';
+export * from './boton-panico-cliente.controller';
+export * from './conductor-boton-panico.controller';
+export * from './boton-panico-conductor.controller';
+export * from './viaje-boton-panico.controller';
+export * from './boton-panico-viaje.controller';
+export * from './boton-panico.controller';

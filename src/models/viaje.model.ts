@@ -6,6 +6,7 @@ import {Conductor} from './conductor.model';
 import {EstadoViaje} from './estado-viaje.model';
 import {Factura} from './factura.model';
 import {Parada} from './parada.model';
+import {BotonPanico} from './boton-panico.model';
 
 @model({
   settings: {
@@ -86,6 +87,9 @@ export class Viaje extends Entity {
   })
   paradaId?: number;
   estado: string;
+
+  @belongsTo(() => BotonPanico)
+  botonPanicoId: number;
 
   constructor(data?: Partial<Viaje>) {
     super(data);

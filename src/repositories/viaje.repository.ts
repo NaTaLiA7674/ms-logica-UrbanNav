@@ -1,7 +1,7 @@
 import {Getter, inject} from '@loopback/core';
 import {BelongsToAccessor, DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {CalificacionCliente, CalificacionConductor, Cliente, Conductor, EstadoViaje, Factura, Viaje, ViajeRelations, Parada} from '../models';
+import {CalificacionCliente, CalificacionConductor, Cliente, Conductor, EstadoViaje, Factura, Viaje, ViajeRelations, Parada, BotonPanico} from '../models';
 import {CalificacionClienteRepository} from './calificacion-cliente.repository';
 import {CalificacionConductorRepository} from './calificacion-conductor.repository';
 import {ClienteRepository} from './cliente.repository';
@@ -9,6 +9,7 @@ import {ConductorRepository} from './conductor.repository';
 import {EstadoViajeRepository} from './estado-viaje.repository';
 import {FacturaRepository} from './factura.repository';
 import {ParadaRepository} from './parada.repository';
+import {BotonPanicoRepository} from './boton-panico.repository';
 
 export class ViajeRepository extends DefaultCrudRepository<
   Viaje,
@@ -32,10 +33,14 @@ export class ViajeRepository extends DefaultCrudRepository<
 
   public readonly puntoDestino: BelongsToAccessor<Parada, typeof Viaje.prototype.id>;
 
+  public readonly botonPanico: BelongsToAccessor<BotonPanico, typeof Viaje.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ClienteRepository') protected clienteRepositoryGetter: Getter<ClienteRepository>, @repository.getter('CalificacionConductorRepository') protected calificacionConductorRepositoryGetter: Getter<CalificacionConductorRepository>, @repository.getter('CalificacionClienteRepository') protected calificacionClienteRepositoryGetter: Getter<CalificacionClienteRepository>, @repository.getter('FacturaRepository') protected facturaRepositoryGetter: Getter<FacturaRepository>, @repository.getter('ConductorRepository') protected conductorRepositoryGetter: Getter<ConductorRepository>, @repository.getter('EstadoViajeRepository') protected estadoViajeRepositoryGetter: Getter<EstadoViajeRepository>, @repository.getter('ParadaRepository') protected paradaRepositoryGetter: Getter<ParadaRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ClienteRepository') protected clienteRepositoryGetter: Getter<ClienteRepository>, @repository.getter('CalificacionConductorRepository') protected calificacionConductorRepositoryGetter: Getter<CalificacionConductorRepository>, @repository.getter('CalificacionClienteRepository') protected calificacionClienteRepositoryGetter: Getter<CalificacionClienteRepository>, @repository.getter('FacturaRepository') protected facturaRepositoryGetter: Getter<FacturaRepository>, @repository.getter('ConductorRepository') protected conductorRepositoryGetter: Getter<ConductorRepository>, @repository.getter('EstadoViajeRepository') protected estadoViajeRepositoryGetter: Getter<EstadoViajeRepository>, @repository.getter('ParadaRepository') protected paradaRepositoryGetter: Getter<ParadaRepository>, @repository.getter('BotonPanicoRepository') protected botonPanicoRepositoryGetter: Getter<BotonPanicoRepository>,
   ) {
     super(Viaje, dataSource);
+    this.botonPanico = this.createBelongsToAccessorFor('botonPanico', botonPanicoRepositoryGetter,);
+    this.registerInclusionResolver('botonPanico', this.botonPanico.inclusionResolver);
     this.puntoDestino = this.createBelongsToAccessorFor('puntoDestino', paradaRepositoryGetter,);
     this.registerInclusionResolver('puntoDestino', this.puntoDestino.inclusionResolver);
     this.puntoOrigen = this.createBelongsToAccessorFor('puntoOrigen', paradaRepositoryGetter,);

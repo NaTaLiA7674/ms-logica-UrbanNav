@@ -6,6 +6,7 @@ import {EstadoConductor} from './estado-conductor.model';
 import {Licencia} from './licencia.model';
 import {Vehiculo} from './vehiculo.model';
 import {Viaje} from './viaje.model';
+import {BotonPanico} from './boton-panico.model';
 
 @model({
   settings: {
@@ -69,6 +70,9 @@ export class Conductor extends Entity {
 
   @hasMany(() => CalificacionConductor)
   calificacionConductor: CalificacionConductor[];
+
+  @hasMany(() => BotonPanico)
+  botonPanico: BotonPanico[];
 
   constructor(data?: Partial<Conductor>) {
     super(data);

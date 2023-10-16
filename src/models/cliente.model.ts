@@ -5,6 +5,7 @@ import {CalificacionConductor} from './calificacion-conductor.model';
 import {Factura} from './factura.model';
 import {MedioPago} from './medio-pago.model';
 import {Viaje} from './viaje.model';
+import {BotonPanico} from './boton-panico.model';
 
 @model({
   settings: {
@@ -81,6 +82,9 @@ export class Cliente extends Entity {
 
   @hasMany(() => CalificacionConductor)
   calificacionConductor: CalificacionConductor[];
+
+  @hasMany(() => BotonPanico)
+  botonPanico: BotonPanico[];
 
   constructor(data?: Partial<Cliente>) {
     super(data);

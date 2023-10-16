@@ -14,3 +14,4 @@ export * from './bloqueo-cliente.repository';
 export * from './bloqueo-conductor.repository';
 export * from './estado-conductor.repository';
 export * from './estado-viaje.repository';
+export * from './boton-panico.repository';

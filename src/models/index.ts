@@ -14,3 +14,4 @@ export * from './estado-conductor.model';
 export * from './estado-viaje.model';
 export * from './bloqueo-cliente.model';
 export * from './bloqueo-conductor.model';
+export * from './boton-panico.model';

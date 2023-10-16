@@ -1,13 +1,14 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Cliente, ClienteRelations, Viaje, Factura, MedioPago, BloqueoCliente, CalificacionCliente, CalificacionConductor} from '../models';
+import {Cliente, ClienteRelations, Viaje, Factura, MedioPago, BloqueoCliente, CalificacionCliente, CalificacionConductor, BotonPanico} from '../models';
 import {ViajeRepository} from './viaje.repository';
 import {FacturaRepository} from './factura.repository';
 import {MedioPagoRepository} from './medio-pago.repository';
 import {BloqueoClienteRepository} from './bloqueo-cliente.repository';
 import {CalificacionClienteRepository} from './calificacion-cliente.repository';
 import {CalificacionConductorRepository} from './calificacion-conductor.repository';
+import {BotonPanicoRepository} from './boton-panico.repository';
 
 export class ClienteRepository extends DefaultCrudRepository<
   Cliente,
@@ -27,10 +28,14 @@ export class ClienteRepository extends DefaultCrudRepository<
 
   public readonly calificacionConductor: HasManyRepositoryFactory<CalificacionConductor, typeof Cliente.prototype.id>;
 
+  public readonly botonPanico: HasManyRepositoryFactory<BotonPanico, typeof Cliente.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ViajeRepository') protected viajeRepositoryGetter: Getter<ViajeRepository>, @repository.getter('FacturaRepository') protected facturaRepositoryGetter: Getter<FacturaRepository>, @repository.getter('MedioPagoRepository') protected medioPagoRepositoryGetter: Getter<MedioPagoRepository>, @repository.getter('BloqueoClienteRepository') protected bloqueoClienteRepositoryGetter: Getter<BloqueoClienteRepository>, @repository.getter('CalificacionClienteRepository') protected calificacionClienteRepositoryGetter: Getter<CalificacionClienteRepository>, @repository.getter('CalificacionConductorRepository') protected calificacionConductorRepositoryGetter: Getter<CalificacionConductorRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ViajeRepository') protected viajeRepositoryGetter: Getter<ViajeRepository>, @repository.getter('FacturaRepository') protected facturaRepositoryGetter: Getter<FacturaRepository>, @repository.getter('MedioPagoRepository') protected medioPagoRepositoryGetter: Getter<MedioPagoRepository>, @repository.getter('BloqueoClienteRepository') protected bloqueoClienteRepositoryGetter: Getter<BloqueoClienteRepository>, @repository.getter('CalificacionClienteRepository') protected calificacionClienteRepositoryGetter: Getter<CalificacionClienteRepository>, @repository.getter('CalificacionConductorRepository') protected calificacionConductorRepositoryGetter: Getter<CalificacionConductorRepository>, @repository.getter('BotonPanicoRepository') protected botonPanicoRepositoryGetter: Getter<BotonPanicoRepository>,
   ) {
     super(Cliente, dataSource);
+    this.botonPanico = this.createHasManyRepositoryFactoryFor('botonPanico', botonPanicoRepositoryGetter,);
+    this.registerInclusionResolver('botonPanico', this.botonPanico.inclusionResolver);
     this.calificacionConductor = this.createHasManyRepositoryFactoryFor('calificacionConductor', calificacionConductorRepositoryGetter,);
     this.registerInclusionResolver('calificacionConductor', this.calificacionConductor.inclusionResolver);
     this.calificacionCliente = this.createHasManyRepositoryFactoryFor('calificacionCliente', calificacionClienteRepositoryGetter,);

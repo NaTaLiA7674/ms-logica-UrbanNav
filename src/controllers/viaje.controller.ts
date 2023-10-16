@@ -40,10 +40,14 @@ export class ViajeController {
   ) { }
 
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.guardarAccion],
+  })
   @post('/viaje')
   @response(200, {
     description: 'Viaje model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(Viaje) } },
+    content: {'application/json': {schema: getModelSchemaRef(Viaje)}},
   })
   async create(
     @requestBody({
@@ -83,6 +87,10 @@ export class ViajeController {
     return this.viajeRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.listarAccion],
+  })
   @get('/viaje')
   @response(200, {
     description: 'Array of Viaje model instances',
@@ -101,6 +109,10 @@ export class ViajeController {
     return this.viajeRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/viaje')
   @response(200, {
     description: 'Viaje PATCH success count',
@@ -120,6 +132,10 @@ export class ViajeController {
     return this.viajeRepository.updateAll(viaje, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.descargarAccion],
+  })
   @get('/viaje/{id}')
   @response(200, {
     description: 'Viaje model instance',
@@ -165,6 +181,10 @@ export class ViajeController {
     await this.viajeRepository.replaceById(id, viaje);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.eliminarAccion],
+  })
   @del('/viaje/{id}')
   @response(204, {
     description: 'Viaje DELETE success',
