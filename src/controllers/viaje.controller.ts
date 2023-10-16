@@ -20,18 +20,30 @@ import {
 } from '@loopback/rest';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Viaje} from '../models';
-import {ViajeRepository} from '../repositories';
+import {ClienteRepository, ConductorRepository, DistanciasRepository, EstadoViajeRepository, ParadaRepository, ViajeRepository} from '../repositories';
+import {SolicitudViajeService} from '../services';
 
 export class ViajeController {
   constructor(
     @repository(ViajeRepository)
     public viajeRepository: ViajeRepository,
+    @repository(ConductorRepository)
+    public conductorRepository: ConductorRepository,
+    @repository(EstadoViajeRepository)
+    public estadoViajeRepository: EstadoViajeRepository,
+    @repository(ParadaRepository)
+    public paradaRepository: ParadaRepository,
+    @repository(DistanciasRepository)
+    public distanciasRepository: DistanciasRepository,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
   ) { }
+
 
   @post('/viaje')
   @response(200, {
     description: 'Viaje model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Viaje)}},
+    content: { 'application/json': { schema: getModelSchemaRef(Viaje) } },
   })
   async create(
     @requestBody({
@@ -46,8 +58,19 @@ export class ViajeController {
     })
     viaje: Omit<Viaje, 'id'>,
   ): Promise<Viaje> {
-    return this.viajeRepository.create(viaje);
+    const solicitudViajeService = new SolicitudViajeService(
+      this.viajeRepository,
+      this.conductorRepository,
+      this.estadoViajeRepository,
+      this.paradaRepository,
+      this.distanciasRepository,
+      this.clienteRepository,
+    );
+    const nuevaSolicitudViaje = await solicitudViajeService.crearSolicitudViaje(viaje);
+
+    return nuevaSolicitudViaje;
   }
+
 
   @get('/viaje/count')
   @response(200, {

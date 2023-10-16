@@ -22,6 +22,27 @@ export class SolicitudViajeService {
     public clienteRepository: ClienteRepository,
   ) { }
 
+
+//Función para crear una solicitud de viaje usando todos las funciones creadas en el servicio de solicitud de viaje, teniendo en cuenta la conexion a la base de datos mysql
+  async crearSolicitudViaje(viaje: Viaje): Promise<Viaje> {
+    // Crear una nueva solicitud de viaje en la base de datos
+    const nuevaSolicitud = await this.viajeRepository.create(viaje);
+
+    // Crear un nuevo estado de viaje para representar la creación de la solicitud
+    const estadoCreado: EstadoViaje = new EstadoViaje({
+      estado: 'creada',
+      comentario: 'Solicitud de viaje creada',
+      fecha: new Date().toISOString(),
+      viajeId: nuevaSolicitud.id,
+    });
+
+    // Crear el estado de viaje en la base de datos
+    await this.estadoViajeRepository.create(estadoCreado);
+
+    return nuevaSolicitud;
+  }
+
+
   //Función para asignar un conductor a una solicitud de viaje
   async asignarConductor(solicitudId: number, conductorId: number): Promise<void> {
     // Verificar si la solicitud de viaje y el conductor existen
@@ -113,10 +134,50 @@ export class SolicitudViajeService {
 
     //Actualizar el atributo kmRecorrido del modelo de viaje
     viaje.kmRecorrido = kmRecorrido;
-
     console.log(`Ruta más favorable de ${origen} a ${destino}: ${rutaMasCorta.join(' -> ')}`);
     console.log(`Kilometraje recorrido: ${kmRecorrido}`);
   }
+
+
+//funcion para obtener el precio del viaje, se reutiliza la funcion anterior de obtener ruta mas corta, se reutiliza la funcion de calcular el kilometraje recorrido, valor por km = 1000
+  async obtenerPrecio(origen: string, destino: string): Promise<void> {
+    //Convertir origen y destino a numeros
+    const origenNumero = Number(origen);
+    const destinoNumero = Number(destino);
+    //Obtener el viaje desde el modelo de viaje
+    const viaje = await this.viajeRepository.findOne({where: {puntoOrigenId: origenNumero, puntoDestinoId: destinoNumero}});
+
+    if (!viaje) {
+      throw new Error('Viaje no encontrado');
+    }
+
+    //Obtener el grafo dirigido previamente creado
+    const grafo = await this.crearGrafoViajes(); //Reutiliza la función anterior
+
+    //Obtener la ruta más corta desde el origen hasta el destino utilizando dijkstrajs
+    const rutaMasCorta = dijkstrajs.find_path(grafo, origen, destino);
+
+    if (!rutaMasCorta) {
+      throw new Error('No se encontró una ruta desde el origen al destino');
+    }
+
+    //Calcular el kilometraje recorrido en la ruta más corta usando la variable kmRecorrido del modelo de viaje
+    let kmRecorrido = 0;
+    for (let i = 0; i < rutaMasCorta.length - 1; i++) {
+      const origen = rutaMasCorta[i];
+      const destino = rutaMasCorta[i + 1];
+      const peso = grafo.edge(origen, destino);
+      kmRecorrido += Number(peso);
+    }
+
+    //Actualizar el atributo kmRecorrido del modelo de viaje
+    viaje.kmRecorrido = kmRecorrido;
+
+    console.log(`Ruta más favorable de ${origen} a ${destino}: ${rutaMasCorta.join(' -> ')}`);
+    console.log(`Kilometraje recorrido: ${kmRecorrido}`);
+    console.log(`Precio del viaje: ${kmRecorrido*1000}`);
+  }
+
 
   //Funcionalidad de botón de pánico que envía un mensaje de alerta a un contacto de emergencia configurado en el modelo del cliente
   async enviarAlertaPanic(clienteId: number): Promise<void> {
