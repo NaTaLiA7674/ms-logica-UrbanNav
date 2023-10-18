@@ -91,10 +91,6 @@ export class CalificacionClienteController {
     return this.calificacionClienteRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: "auth",
-    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.editarAccion]
-  })
   @patch('/calificacion-cliente')
   @response(200, {
     description: 'CalificacionCliente PATCH success count',
@@ -134,6 +130,10 @@ export class CalificacionClienteController {
     return this.calificacionClienteRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: "auth",
+    options: [ConfiguracionSeguridad.menuCalificacionAlConductorId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/calificacion-cliente/{id}')
   @response(204, {
     description: 'CalificacionCliente PATCH success',

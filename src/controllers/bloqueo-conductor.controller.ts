@@ -86,10 +86,6 @@ export class BloqueoConductorController {
     return this.bloqueoConductorRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.editarAccion]
-  })
   @patch('/bloqueo-conductor')
   @response(200, {
     description: 'BloqueoConductor PATCH success count',
@@ -129,6 +125,10 @@ export class BloqueoConductorController {
     return this.bloqueoConductorRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoConductorId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/bloqueo-conductor/{id}')
   @response(204, {
     description: 'BloqueoConductor PATCH success',

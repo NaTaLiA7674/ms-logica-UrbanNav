@@ -1,11 +1,11 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
 import {BloqueoCliente} from './bloqueo-cliente.model';
+import {BotonPanico} from './boton-panico.model';
 import {CalificacionCliente} from './calificacion-cliente.model';
 import {CalificacionConductor} from './calificacion-conductor.model';
 import {Factura} from './factura.model';
 import {MedioPago} from './medio-pago.model';
 import {Viaje} from './viaje.model';
-import {BotonPanico} from './boton-panico.model';
 
 @model({
   settings: {
@@ -48,6 +48,12 @@ export class Cliente extends Entity {
     type: 'string',
   })
   segundoApellido?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  telefono: string;
 
   @hasMany(() => Viaje)
   viaje: Viaje[];

@@ -21,11 +21,14 @@ import {
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {BotonPanico} from '../models';
 import {BotonPanicoRepository} from '../repositories';
+import {SolicitudViajeService} from '../services';
 
 export class BotonPanicoController {
   constructor(
     @repository(BotonPanicoRepository)
     public botonPanicoRepository: BotonPanicoRepository,
+    @repository(SolicitudViajeService)
+    public solicitudViajeService: SolicitudViajeService,
   ) { }
 
   @authenticate({
@@ -50,9 +53,16 @@ export class BotonPanicoController {
     })
     botonPanico: Omit<BotonPanico, 'id'>,
   ): Promise<BotonPanico> {
+    // Aquí debes inyectar una instancia de SolicitudViajeService
+    const solicitudViajeService = this.solicitudViajeService; // Asegúrate de inyectar el servicio en tu controlador
+
+    // Llama a la función enviarAlertaPanic del servicio con el clienteId
+    const clienteId = botonPanico.clienteId; // Asumo que tienes un campo clienteId en tu modelo BotonPanico
+    await solicitudViajeService.enviarAlertaPanic(clienteId);
+
+    // Luego, puedes continuar con la creación del BotonPanico si es necesario
     return this.botonPanicoRepository.create(botonPanico);
   }
-
   @get('/botonPanico/count')
   @response(200, {
     description: 'BotonPanico model count',
@@ -86,10 +96,6 @@ export class BotonPanicoController {
     return this.botonPanicoRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuBotonPanicoId, ConfiguracionSeguridad.editarAccion],
-  })
   @patch('/botonPanico')
   @response(200, {
     description: 'BotonPanico PATCH success count',
@@ -129,6 +135,10 @@ export class BotonPanicoController {
     return this.botonPanicoRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBotonPanicoId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/botonPanico/{id}')
   @response(204, {
     description: 'BotonPanico PATCH success',

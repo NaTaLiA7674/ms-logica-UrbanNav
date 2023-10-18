@@ -86,10 +86,6 @@ export class DistanciasController {
     return this.distanciasRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.editarAccion]
-  })
   @patch('/distancias')
   @response(200, {
     description: 'Distancias PATCH success count',
@@ -129,6 +125,10 @@ export class DistanciasController {
     return this.distanciasRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuDistanciasId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/distancias/{id}')
   @response(204, {
     description: 'Distancias PATCH success',

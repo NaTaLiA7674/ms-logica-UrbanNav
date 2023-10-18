@@ -86,10 +86,6 @@ export class BloqueoClienteController {
     return this.bloqueoClienteRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.editarAccion]
-  })
   @patch('/bloqueo-cliente')
   @response(200, {
     description: 'BloqueoCliente PATCH success count',
@@ -129,6 +125,10 @@ export class BloqueoClienteController {
     return this.bloqueoClienteRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuBloqueoClienteId, ConfiguracionSeguridad.editarAccion]
+  })
   @patch('/bloqueo-cliente/{id}')
   @response(204, {
     description: 'BloqueoCliente PATCH success',

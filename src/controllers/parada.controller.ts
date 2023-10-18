@@ -86,10 +86,6 @@ export class ParadaController {
     return this.paradaRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.editarAccion],
-  })
   @patch('/parada')
   @response(200, {
     description: 'Parada PATCH success count',
@@ -129,6 +125,10 @@ export class ParadaController {
     return this.paradaRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuParadasId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/parada/{id}')
   @response(204, {
     description: 'Parada PATCH success',

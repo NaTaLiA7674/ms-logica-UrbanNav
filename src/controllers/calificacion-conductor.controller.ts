@@ -90,10 +90,6 @@ export class CalificacionConductorController {
     return this.calificacionConductorRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.editarAccion],
-  })
   @patch('/calificacion-conductor')
   @response(200, {
     description: 'CalificacionConductor PATCH success count',
@@ -133,6 +129,10 @@ export class CalificacionConductorController {
     return this.calificacionConductorRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuCalificacionAlClienteId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/calificacion-conductor/{id}')
   @response(204, {
     description: 'CalificacionConductor PATCH success',

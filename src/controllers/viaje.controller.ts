@@ -37,6 +37,8 @@ export class ViajeController {
     public distanciasRepository: DistanciasRepository,
     @repository(ClienteRepository)
     public clienteRepository: ClienteRepository,
+    @repository(SolicitudViajeService)
+    public solicitudViajeService: SolicitudViajeService,
   ) { }
 
 
@@ -109,10 +111,6 @@ export class ViajeController {
     return this.viajeRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.editarAccion],
-  })
   @patch('/viaje')
   @response(200, {
     description: 'Viaje PATCH success count',
@@ -152,6 +150,10 @@ export class ViajeController {
     return this.viajeRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuSolicitudViajeId, ConfiguracionSeguridad.editarAccion],
+  })
   @patch('/viaje/{id}')
   @response(204, {
     description: 'Viaje PATCH success',
@@ -161,14 +163,25 @@ export class ViajeController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Viaje, {partial: true}),
+          schema: getModelSchemaRef(Viaje, {
+            partial: true,
+            exclude: ['id'],
+          }),
         },
       },
     })
-    viaje: Viaje,
+    viaje: Omit<Viaje, 'id'>,
   ): Promise<void> {
+    // Aquí debes inyectar una instancia de SolicitudViajeService
+    const solicitudViajeService = this.solicitudViajeService; // Asegúrate de inyectar el servicio en tu controlador
+
+    // Llama a la función crearSolicitudViaje del servicio con el objeto Viaje
+    await solicitudViajeService.crearSolicitudViaje(viaje);
+
+    // Luego, puedes continuar con la actualización del Viaje si es necesario
     await this.viajeRepository.updateById(id, viaje);
   }
+
 
   @put('/viaje/{id}')
   @response(204, {
