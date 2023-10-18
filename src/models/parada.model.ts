@@ -1,7 +1,7 @@
 import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {Ciudad} from './ciudad.model';
-import {Viaje} from './viaje.model';
 import {Distancias} from './distancias.model';
+import {Viaje} from './viaje.model';
 
 @model({
   settings: {

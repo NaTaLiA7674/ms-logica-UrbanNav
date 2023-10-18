@@ -1,4 +1,5 @@
 import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
+import {BotonPanico} from './boton-panico.model';
 import {CalificacionCliente} from './calificacion-cliente.model';
 import {CalificacionConductor} from './calificacion-conductor.model';
 import {Cliente} from './cliente.model';
@@ -6,7 +7,6 @@ import {Conductor} from './conductor.model';
 import {EstadoViaje} from './estado-viaje.model';
 import {Factura} from './factura.model';
 import {Parada} from './parada.model';
-import {BotonPanico} from './boton-panico.model';
 
 @model({
   settings: {
