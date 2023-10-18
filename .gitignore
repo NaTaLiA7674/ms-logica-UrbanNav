@@ -63,8 +63,10 @@ typings/
 # Cache used by TypeScript's incremental build
 *.tsbuildinfo
 
-#Opción para ignorar la carpeta datasources que esta dentro de src
-!/src/datasources
+# Ignorar la carpeta datasources en src
+/src/datasources/
+
+
 
 
 
