@@ -49,12 +49,6 @@ export class Cliente extends Entity {
   })
   segundoApellido?: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  telefono: string;
-
   @hasMany(() => Viaje)
   viaje: Viaje[];
 
