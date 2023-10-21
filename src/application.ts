@@ -11,6 +11,8 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {AuthStrategy} from './auth/strategy';
 import {MySequence} from './sequence';
+import {SolicitudViajeService} from './services'; // Asegúrate de que la ruta sea correcta
+
 
 export {ApplicationConfig};
 
@@ -20,6 +22,7 @@ export class App extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    this.bind('services.SolicitudViajeService').toClass(SolicitudViajeService);
     // Set up the custom sequence
     this.sequence(MySequence);
 
@@ -45,5 +48,6 @@ export class App extends BootMixin(
 
     registerAuthenticationStrategy(this, AuthStrategy);
     this.component(AuthenticationComponent);
+
   }
 }

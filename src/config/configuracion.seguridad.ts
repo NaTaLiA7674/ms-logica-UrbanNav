@@ -9,6 +9,7 @@ export namespace ConfiguracionSeguridad {
   export const menuDistanciasId = "652487e4b7b4ea4d182c8fcb";
   export const menuBloqueoClienteId = "65248828b7b4ea4d182c8fcc";
   export const menuBloqueoConductorId = "6524883eb7b4ea4d182c8fcd";
+  export const menuCancelarViajeId = "6524858cb7b4ea4d182c8fc3";
   export const listarAccion = "listar";
   export const guardarAccion = "guardar";
   export const editarAccion = "editar";

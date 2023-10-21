@@ -1,7 +1,7 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import * as graphlib from 'graphlib';
-import {Conductor, EstadoViaje, Viaje} from '../models';
+import {EstadoViaje, Viaje} from '../models';
 import {ClienteRepository, ConductorRepository, DistanciasRepository, EstadoViajeRepository, ParadaRepository, ViajeRepository} from '../repositories';
 
 @injectable({scope: BindingScope.TRANSIENT})
@@ -22,56 +22,43 @@ export class SolicitudViajeService {
   ) { }
 
 
-  //Función para crear una solicitud de viaje usando todos las funciones creadas en el servicio de solicitud de viaje, teniendo en cuenta la conexion a la base de datos mysql
-  async crearSolicitudViaje(viaje: Viaje): Promise<Viaje> {
-    // Crear una nueva solicitud de viaje en la base de datos
-    const nuevaSolicitud = await this.viajeRepository.create(viaje);
-
-    // Crear un nuevo estado de viaje para representar la creación de la solicitud
-    const estadoCreado: EstadoViaje = new EstadoViaje({
-      estado: 'creada',
-      comentario: 'Solicitud de viaje creada',
-      fecha: new Date().toISOString(),
-      viajeId: nuevaSolicitud.id,
-    });
-
-    // Crear el estado de viaje en la base de datos
-    await this.estadoViajeRepository.create(estadoCreado);
-
-    return nuevaSolicitud;
-  }
-
-
-  //Función para asignar un conductor a una solicitud de viaje
-  async asignarConductor(solicitudId: number, conductorId: number): Promise<void> {
-    // Verificar si la solicitud de viaje y el conductor existen
+  // Función para asignar un conductor a una solicitud de viaje
+  async asignarConductor(solicitudId: number): Promise<void> {
+    // Verificar si la solicitud de viaje existe
     const solicitud: Viaje = await this.viajeRepository.findById(solicitudId);
-    const conductor: Conductor = await this.conductorRepository.findById(conductorId);
 
-    if (!solicitud || !conductor) {
-      throw new Error('Solicitud de viaje o conductor no encontrados');
+    if (!solicitud) {
+      throw new Error('Solicitud de viaje no encontrada');
     }
 
     // Verificar si la solicitud está pendiente y el conductor no está asignado a otra solicitud
     if (solicitud.estado !== 'pendiente' || solicitud.conductorId) {
-      throw new Error('La solicitud ya ha sido asignada o no esta pendiente');
+      throw new Error('La solicitud ya ha sido asignada o no está pendiente');
     }
 
-    // Crear un nuevo estado de viaje para representar la asignación del conductor
-    const estadoAsignado: EstadoViaje = new EstadoViaje({
-      estado: 'aceptada', // Cambiar el estado del viaje a 'aceptada'
-      comentario: `Viaje asignado al conductor ${conductorId}`,
-      fecha: new Date().toISOString(),
-      viajeId: solicitud.id,
-    });
-
-    // Actualizar la solicitud con el ID del conductor asignado y cambiar el estado a 'aceptada'
-    solicitud.conductorId = conductorId;
+    // Cambiar el estado del viaje a 'aceptada'
     solicitud.estado = 'aceptada';
 
     // Actualizar la solicitud y crear el estado de viaje en la base de datos
     await this.viajeRepository.update(solicitud);
-    await this.estadoViajeRepository.create(estadoAsignado);
+
+    // Aquí puedes notificar a todos los conductores de la nueva solicitud de viaje
+    // Esto dependerá de cómo implementas la notificación a los conductores en tu aplicación.
+
+    // Puedes agregar código para notificar a los conductores de la nueva solicitud y permitirles aceptarla.
+    // Cuando un conductor acepta la solicitud, actualizas el campo conductorId en la solicitud.
+
+    // Si un conductor acepta la solicitud, actualiza solicitud.conductorId = conductorId;
+
+    // Puedes implementar una lógica para que un conductor acepte la solicitud y actualices solicitud.conductorId en ese punto.
+
+    // Si un conductor acepta la solicitud, crea un registro en el historial de estados de viaje.
+
+    // Puedes registrar un nuevo estado de viaje para reflejar la aceptación por parte del conductor.
+
+    // Recuerda manejar correctamente la lógica de notificación y aceptación por parte de los conductores.
+
+    // Esta parte dependerá de cómo implementas la asignación de conductores en tu sistema.
   }
 
   //Función para crear el grafo de viajes utilizando paradas y distancias
@@ -107,10 +94,19 @@ export class SolicitudViajeService {
     const destinoNumero = Number(destino);
 
     // Obtener el viaje desde el modelo de viaje
-    const viaje = await this.viajeRepository.findOne({where: {puntoOrigenId: origenNumero, puntoDestinoId: destinoNumero}});
+    let viaje = await this.viajeRepository.findOne({where: {puntoOrigenId: origenNumero, puntoDestinoId: destinoNumero}});
 
     if (!viaje) {
-      throw new Error('Viaje no encontrado');
+      // crear un nuevo viaje en la base de datos con los valores proporcionados y luego continuar con la lógica de rutas
+      const nuevoViaje = new Viaje({
+        puntoOrigenId: origenNumero,
+        puntoDestinoId: destinoNumero,
+        estado: 'pendiente',
+      });
+
+      const nuevoViajeGuardado = await this.viajeRepository.create(nuevoViaje);
+      //continuar con la logica de rutas utilizando el nuevo viaje
+      viaje = nuevoViajeGuardado;
     }
 
     // Obtener el grafo dirigido previamente creado
@@ -149,12 +145,24 @@ export class SolicitudViajeService {
 
     const rutaMasCorta = await this.reconstruirRuta(origen, destino, ruta);
     const kmRecorrido = distancia[destino];
+    const costo = kmRecorrido * 1000;
 
     // Actualizar el atributo kmRecorrido del modelo de viaje
     viaje.kmRecorrido = kmRecorrido;
+    viaje.costo = costo;
+
+    //Crear un nuevo estado de viaje para representar el cambio de estado:
+    const nuevoEstado: EstadoViaje = new EstadoViaje({
+      estado: 'en curso',
+      comentario: `Viaje en curso`,
+      fecha: new Date().toISOString(),
+      viajeId: viaje.id,
+    });
+
+    //Guardar el nuevo estado de viaje en la base de datos
+    await this.estadoViajeRepository.create(nuevoEstado);
+
     console.log(`Ruta más favorable de ${origen} a ${destino}: ${rutaMasCorta.join(' -> ')}`);
-    console.log(`Kilometraje recorrido: ${kmRecorrido}`);
-    console.log(`Precio del viaje: ${kmRecorrido * 1000}`);
 
     return rutaMasCorta;
   }
