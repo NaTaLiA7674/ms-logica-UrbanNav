@@ -33,11 +33,6 @@ export class Distancias extends Entity {
   })
   kilometros: number;
 
-  @property({
-    type: 'number',
-  })
-  tiempoEstimado?: number;
-
   @belongsTo(() => Parada)
   origenId: number;
 

@@ -21,6 +21,7 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {Nodo} from '../grafo/nodo';
 import {EstadoViaje, Viaje} from '../models';
 import {ClienteRepository, ConductorRepository, DistanciasRepository, EstadoViajeRepository, ParadaRepository, ViajeRepository} from '../repositories';
 import {SolicitudViajeService} from '../services';
@@ -75,15 +76,29 @@ export class ViajeController {
       this.clienteRepository,
     );
     try {
-      //Utiliza la función para obtener la ruta más corta y los valores de costo y kmRecorrido
-      const rutaMasCorta = await solicitudViajeService.obtenerRutaMasCorta(viaje.puntoOrigenId.toString(), viaje.puntoDestinoId.toString());
-      console.log('Iniciando función create');
-      console.log('Valores de puntoOrigenId y putoDestinoId:', viaje.puntoOrigenId, viaje.puntoDestinoId);
+      const puntoOrigen = new Nodo(viaje.puntoOrigenId!.toString(), '', '');
+      const puntoDestino = new Nodo(viaje.puntoDestinoId!.toString(), '', '');
 
-      //Crear una nueva solicitud de viaje con los valores proporcionados
+      if (!puntoOrigen || !puntoDestino) {
+        throw new HttpErrors.BadRequest('Puntos de origen o destino no encontrados');
+      }
+
+      // Utiliza la función para obtener la ruta más corta y los valores de costo y kmRecorrido
+      const grafo = await solicitudViajeService.crearGrafo(); // Crear el grafo
+      const rutaMasCorta = await solicitudViajeService.dijkstra(grafo, puntoOrigen, puntoDestino);
+
+      if (rutaMasCorta.length === 0) {
+        throw new HttpErrors.BadRequest('No se pudo encontrar una ruta válida');
+      }
+
+      // Calcula el costo y la distancia total basados en la ruta más corta
+      const costo = await solicitudViajeService.calcularCosto(rutaMasCorta);
+      const kmRecorrido = await solicitudViajeService.calcularDistanciaTotal(rutaMasCorta);
+
+      // Crear una nueva solicitud de viaje con los valores proporcionados
       const nuevoViaje: Viaje = new Viaje({
-        costo: viaje.costo,
-        kmRecorrido: viaje.kmRecorrido,
+        costo: costo,
+        kmRecorrido: kmRecorrido,
         clienteId: viaje.clienteId,
         calificacionConductorId: viaje.calificacionConductorId,
         calificacionClienteId: viaje.calificacionClienteId,
@@ -95,20 +110,19 @@ export class ViajeController {
         botonPanicoId: viaje.botonPanicoId,
       });
 
-      //Guarda el nuevo viaje en la base de datos
+      // Guarda el nuevo viaje en la base de datos
       const nuevaSolicitudViaje = await this.viajeRepository.create(nuevoViaje);
 
-      //Asignar un conductor al viaje
+      // Asignar un conductor al viaje
       await solicitudViajeService.asignarConductor(nuevaSolicitudViaje.id!);
 
       return nuevaSolicitudViaje;
     } catch (error) {
-      console.error('Error en función create:', error)
-      //Maneja cualquier error que pueda ocurrir al crear la solicitud de viaje o asignar un conductor
+      console.error('Error en función create:', error);
+      // Maneja cualquier error que pueda ocurrir al crear la solicitud de viaje o asignar un conductor
       throw new HttpErrors.BadRequest('No se pudo crear la solicitud de viaje: ' + error.message);
     }
   }
-
 
   @get('/viaje/count')
   @response(200, {
@@ -204,54 +218,43 @@ export class ViajeController {
     })
     viaje: Omit<Viaje, 'id'>,
   ): Promise<void> {
-    const solicitudViajeService = new SolicitudViajeService(
-      this.viajeRepository,
-      this.conductorRepository,
-      this.estadoViajeRepository,
-      this.paradaRepository,
-      this.distanciasRepository,
-      this.clienteRepository,
-    );
-
     try {
       const existingViaje = await this.viajeRepository.findById(id);
       if (!existingViaje) {
         throw new HttpErrors.BadRequest('No se encontró el viaje con el ID especificado.');
       }
 
-      //utiliza la función para obtener la ruta mas corta y los valores de costo y kmRecorrido
-      const rutaMasCorta = await solicitudViajeService.obtenerRutaMasCorta(viaje.puntoOrigenId.toString(), viaje.puntoDestinoId.toString());
+      // Utiliza la función para obtener la ruta más corta y los valores de costo y kmRecorrido
+      const rutaMasCorta = await this.solicitudViajeService.dijkstra(
+        await this.solicitudViajeService.crearGrafo(),
+        new Nodo(viaje.puntoOrigenId.toString(), '', ''),
+        new Nodo(viaje.puntoDestinoId.toString(), '', '')
+      );
 
-      //Actualiza los valores proporcionados en el viaje existente
-      existingViaje.costo = viaje.costo;
-      existingViaje.kmRecorrido = viaje.kmRecorrido;
-      existingViaje.clienteId = viaje.clienteId;
-      existingViaje.calificacionConductorId = viaje.calificacionConductorId;
-      existingViaje.calificacionClienteId = viaje.calificacionClienteId;
-      existingViaje.facturaId = viaje.facturaId;
-      existingViaje.conductorId = viaje.conductorId;
-      existingViaje.puntoOrigenId = viaje.puntoOrigenId;
-      existingViaje.puntoDestinoId = viaje.puntoDestinoId;
-      existingViaje.paradaId = viaje.paradaId;
-      existingViaje.botonPanicoId = viaje.botonPanicoId;
-
-      //Actualiza el estado a 'pendiente' si es necesario
-      if (!existingViaje.estado || existingViaje.estado !== 'pendiente') {
-        existingViaje.estado = 'pendiente';
+      // Actualiza los valores proporcionados en el viaje existente
+      for (const key of Object.keys(viaje)) {
+        if (key in existingViaje) {
+          (existingViaje as any)[key] = (viaje as any)[key];
+        }
       }
 
-      //Asignar un conductor al viaje después de actualizarlo
-      await solicitudViajeService.asignarConductor(existingViaje.id!);
+      // Calcula el costo y la distancia total basados en la ruta más corta
+      const costo = await this.solicitudViajeService.calcularCosto(rutaMasCorta);
+      const kmRecorrido = await this.solicitudViajeService.calcularDistanciaTotal(rutaMasCorta);
 
-      //Actualiza el viaje en la base de datos
+      // Asigna un conductor al viaje después de actualizarlo
+      await this.solicitudViajeService.asignarConductor(existingViaje.id!);
+
+      // Actualiza el viaje en la base de datos
       await this.viajeRepository.update(existingViaje);
 
       return;
     } catch (error) {
-      //Maneja cualquier error que pueda ocurrir al actualizar la solicitud de viaje o asignar un conductor
+      // Maneja cualquier error que pueda ocurrir al actualizar la solicitud de viaje o asignar un conductor
       throw new HttpErrors.BadRequest('No se pudo actualizar la solicitud de viaje: ' + error.message);
     }
   }
+
 
   @authenticate({
     strategy: 'auth',

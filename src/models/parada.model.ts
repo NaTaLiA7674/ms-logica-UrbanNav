@@ -34,6 +34,12 @@ export class Parada extends Entity {
   })
   informacionAdicional?: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  clave: string;
+
   @belongsTo(() => Ciudad)
   ubicacionId: number;
 
