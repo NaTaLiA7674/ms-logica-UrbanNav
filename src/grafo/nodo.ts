@@ -61,4 +61,9 @@ export class Nodo {
     this.nombre = nombre;
   }
 
+  // Método para obtener una arista específica por destino
+  getAristaByDestino(destinoId: string): Arista | undefined {
+    return this.aristas.find((arista) => arista.nodo.getId() === destinoId);
+  }
+
 }

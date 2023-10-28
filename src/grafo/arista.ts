@@ -1,5 +1,3 @@
-// class Edge for the graph with Node and Weight
-
 import {Nodo} from './nodo';
 
 export class Arista {
@@ -11,23 +9,28 @@ export class Arista {
     this.peso = peso;
   }
 
-  // get node of edge
-  getNodo() {
+  // Obtener el nodo de la arista (anteriormente 'getDestino')
+  getNodo(): Nodo {
     return this.nodo;
   }
 
-  // get weight of edge
-  getPeso() {
+  // Obtener el peso de la arista (anteriormente 'getPeso')
+  getPeso(): number {
     return this.peso;
   }
 
-  // set node of edge
+  // Establecer el nodo de la arista
   setNodo(nodo: Nodo) {
     this.nodo = nodo;
   }
 
-  // set weight of edge
+  // Establecer el peso de la arista
   setPeso(peso: number) {
     this.peso = peso;
+  }
+
+  // Nuevo método para obtener el costo de la arista
+  getCosto(): number {
+    return this.peso;
   }
 }
