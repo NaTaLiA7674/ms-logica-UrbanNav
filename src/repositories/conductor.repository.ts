@@ -1,7 +1,7 @@
 import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
+import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory, HasManyThroughRepositoryFactory} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Conductor, ConductorRelations, Vehiculo, Licencia, Viaje, EstadoConductor, BloqueoConductor, CalificacionCliente, CalificacionConductor, BotonPanico} from '../models';
+import {Conductor, ConductorRelations, Vehiculo, Licencia, Viaje, EstadoConductor, BloqueoConductor, CalificacionCliente, CalificacionConductor, BotonPanico, Parada, UbicacionConductor} from '../models';
 import {VehiculoRepository} from './vehiculo.repository';
 import {LicenciaRepository} from './licencia.repository';
 import {ViajeRepository} from './viaje.repository';
@@ -10,6 +10,8 @@ import {BloqueoConductorRepository} from './bloqueo-conductor.repository';
 import {CalificacionClienteRepository} from './calificacion-cliente.repository';
 import {CalificacionConductorRepository} from './calificacion-conductor.repository';
 import {BotonPanicoRepository} from './boton-panico.repository';
+import {UbicacionConductorRepository} from './ubicacion-conductor.repository';
+import {ParadaRepository} from './parada.repository';
 
 export class ConductorRepository extends DefaultCrudRepository<
   Conductor,
@@ -33,10 +35,17 @@ export class ConductorRepository extends DefaultCrudRepository<
 
   public readonly botonPanico: HasManyRepositoryFactory<BotonPanico, typeof Conductor.prototype.id>;
 
+  public readonly paradaCercana: HasManyThroughRepositoryFactory<Parada, typeof Parada.prototype.id,
+          UbicacionConductor,
+          typeof Conductor.prototype.id
+        >;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('VehiculoRepository') protected vehiculoRepositoryGetter: Getter<VehiculoRepository>, @repository.getter('LicenciaRepository') protected licenciaRepositoryGetter: Getter<LicenciaRepository>, @repository.getter('ViajeRepository') protected viajeRepositoryGetter: Getter<ViajeRepository>, @repository.getter('EstadoConductorRepository') protected estadoConductorRepositoryGetter: Getter<EstadoConductorRepository>, @repository.getter('BloqueoConductorRepository') protected bloqueoConductorRepositoryGetter: Getter<BloqueoConductorRepository>, @repository.getter('CalificacionClienteRepository') protected calificacionClienteRepositoryGetter: Getter<CalificacionClienteRepository>, @repository.getter('CalificacionConductorRepository') protected calificacionConductorRepositoryGetter: Getter<CalificacionConductorRepository>, @repository.getter('BotonPanicoRepository') protected botonPanicoRepositoryGetter: Getter<BotonPanicoRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('VehiculoRepository') protected vehiculoRepositoryGetter: Getter<VehiculoRepository>, @repository.getter('LicenciaRepository') protected licenciaRepositoryGetter: Getter<LicenciaRepository>, @repository.getter('ViajeRepository') protected viajeRepositoryGetter: Getter<ViajeRepository>, @repository.getter('EstadoConductorRepository') protected estadoConductorRepositoryGetter: Getter<EstadoConductorRepository>, @repository.getter('BloqueoConductorRepository') protected bloqueoConductorRepositoryGetter: Getter<BloqueoConductorRepository>, @repository.getter('CalificacionClienteRepository') protected calificacionClienteRepositoryGetter: Getter<CalificacionClienteRepository>, @repository.getter('CalificacionConductorRepository') protected calificacionConductorRepositoryGetter: Getter<CalificacionConductorRepository>, @repository.getter('BotonPanicoRepository') protected botonPanicoRepositoryGetter: Getter<BotonPanicoRepository>, @repository.getter('UbicacionConductorRepository') protected ubicacionConductorRepositoryGetter: Getter<UbicacionConductorRepository>, @repository.getter('ParadaRepository') protected paradaRepositoryGetter: Getter<ParadaRepository>,
   ) {
     super(Conductor, dataSource);
+    this.paradaCercana = this.createHasManyThroughRepositoryFactoryFor('paradaCercana', paradaRepositoryGetter, ubicacionConductorRepositoryGetter,);
+    this.registerInclusionResolver('paradaCercana', this.paradaCercana.inclusionResolver);
     this.botonPanico = this.createHasManyRepositoryFactoryFor('botonPanico', botonPanicoRepositoryGetter,);
     this.registerInclusionResolver('botonPanico', this.botonPanico.inclusionResolver);
     this.calificacionConductor = this.createHasManyRepositoryFactoryFor('calificacionConductor', calificacionConductorRepositoryGetter,);

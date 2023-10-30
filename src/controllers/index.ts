@@ -64,3 +64,6 @@ export * from './boton-panico-conductor.controller';
 export * from './viaje-boton-panico.controller';
 export * from './boton-panico-viaje.controller';
 export * from './boton-panico.controller';
+export * from './conductor-parada.controller';
+export * from './parada-conductor.controller';
+export * from './ubicacion-conductor.controller';

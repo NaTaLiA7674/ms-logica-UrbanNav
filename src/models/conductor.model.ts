@@ -7,6 +7,8 @@ import {EstadoConductor} from './estado-conductor.model';
 import {Licencia} from './licencia.model';
 import {Vehiculo} from './vehiculo.model';
 import {Viaje} from './viaje.model';
+import {Parada} from './parada.model';
+import {UbicacionConductor} from './ubicacion-conductor.model';
 
 @model({
   settings: {
@@ -56,6 +58,16 @@ export class Conductor extends Entity {
   })
   segundoApellido?: string;
 
+  @property({
+    type: 'string',
+  })
+  correo?: string;
+
+  @property({
+    type: 'string',
+  })
+  celular?: string;
+
   @belongsTo(() => Vehiculo)
   vehiculoId: number;
 
@@ -79,6 +91,9 @@ export class Conductor extends Entity {
 
   @hasMany(() => BotonPanico)
   botonPanico: BotonPanico[];
+
+  @hasMany(() => Parada, {through: {model: () => UbicacionConductor}})
+  paradaCercana: Parada[];
 
   constructor(data?: Partial<Conductor>) {
     super(data);

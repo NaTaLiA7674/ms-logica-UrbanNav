@@ -16,4 +16,6 @@ export namespace ConfiguracionSeguridad {
   export const eliminarAccion = "eliminar";
   export const descargarAccion = "descargar";
   export const enlaceMicroservicioSeguridad: string = "http://localhost:3003";
+  export const IdRolCliente = "65248419b7b4ea4d182c8fbe";
+  export const IdRolConductor = "65248429b7b4ea4d182c8fbf";
 }

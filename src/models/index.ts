@@ -15,3 +15,4 @@ export * from './estado-viaje.model';
 export * from './bloqueo-cliente.model';
 export * from './bloqueo-conductor.model';
 export * from './boton-panico.model';
+export * from './ubicacion-conductor.model';

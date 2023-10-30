@@ -129,39 +129,20 @@ export class SolicitudViajeService {
     return costoTotal;
   }
 
+  //Método para buscar los conductores cercanos a un origen teniendo en cuenta que los conductores al iniciar sesión ingresan los puntos de parada cercanos
+  async buscarConductoresCercanos(origen: string): Promise<any[]> {
+    const conductores = await this.conductorRepository.find();
+    const conductoresCercanos: any[] = [];
 
-  // // Método para calcular la distancia total de una ruta (puedes ajustarlo según tus necesidades)
-  // async calcularDistanciaTotal(ruta: string): Promise<number> {
-  //   // Realiza el cálculo de la distancia total según la ruta proporcionada
-  //   // Puedes implementar la lógica para calcular la distancia total aquí
-  //   // Debes recorrer la ruta y sumar las distancias entre nodos, teniendo en cuenta tu grafo y aristas
-  //   // Retorna la distancia total calculada
+    for await (const conductor of conductores) {
+      const paradasCercanas = conductor.paradaCercana; // Esto es una colección de paradas
+      if (paradasCercanas.some(parada => parada.nombreParada === origen)) {
+        conductoresCercanos.push(conductor);
+      }
+    }
 
-  //   // A continuación, se proporciona un ejemplo simplificado. Asegúrate de adaptar esta lógica según tu implementación real.
-
-  //   // Obtén el grafo
-  //   const grafo = await this.crearGrafo();
-  //   let distanciaTotal = 0;
-
-  //   for (let i = 0; i < ruta.length - 1; i++) {
-  //     const nodoOrigen = grafo.getNodoById(ruta[i]);
-  //     const nodoDestino = grafo.getNodoById(ruta[i + 1]);
-
-  //     if (!nodoOrigen || !nodoDestino) {
-  //       throw new Error('Nodo de origen o destino no encontrado en el grafo.');
-  //     }
-
-  //     const arista = nodoOrigen.getAristaByDestino(nodoDestino.getId());
-
-  //     if (!arista) {
-  //       throw new Error('Arista no encontrada entre los nodos de la ruta.');
-  //     }
-
-  //     distanciaTotal += arista.getPeso();
-  //   }
-
-  //   return distanciaTotal;
-  // }
+    return conductoresCercanos;
+  }
 
   // print the graph node by node with edges in console
   printGraph(grafo: Grafo) {

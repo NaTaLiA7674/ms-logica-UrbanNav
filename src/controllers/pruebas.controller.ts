@@ -51,7 +51,7 @@ export class pruebasController {
   async rutaMasCorta(
   ): Promise<number> {
     let grafo = await this.solicitudViajeSevice.crearGrafo();
-    const costo = await this.solicitudViajeSevice.costoRutaMasCorta('15', '17');
+    const costo = await this.solicitudViajeSevice.costoRutaMasCorta('14', '18');
     return costo;
   }
 

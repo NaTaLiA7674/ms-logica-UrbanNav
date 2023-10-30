@@ -2,6 +2,8 @@ import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository'
 import {Ciudad} from './ciudad.model';
 import {Distancias} from './distancias.model';
 import {Viaje} from './viaje.model';
+import {Conductor} from './conductor.model';
+import {UbicacionConductor} from './ubicacion-conductor.model';
 
 @model({
   settings: {
@@ -48,6 +50,9 @@ export class Parada extends Entity {
 
   @hasMany(() => Distancias)
   distancia: Distancias[];
+
+  @hasMany(() => Conductor, {through: {model: () => UbicacionConductor}})
+  paradaCercana: Conductor[];
 
   constructor(data?: Partial<Parada>) {
     super(data);

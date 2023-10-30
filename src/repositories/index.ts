@@ -15,3 +15,4 @@ export * from './bloqueo-conductor.repository';
 export * from './estado-conductor.repository';
 export * from './estado-viaje.repository';
 export * from './boton-panico.repository';
+export * from './ubicacion-conductor.repository';

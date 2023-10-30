@@ -47,6 +47,17 @@ export class Cliente extends Entity {
   @property({
     type: 'string',
   })
+  celular?: string;
+
+
+  @property({
+    type: 'string',
+  })
+  correo?: string;
+
+  @property({
+    type: 'string',
+  })
   segundoApellido?: string;
 
   @hasMany(() => Viaje)

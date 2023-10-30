@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,27 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
 import {Conductor} from '../models';
 import {ConductorRepository} from '../repositories';
+import {RegistroConductorService} from '../services';
 
 export class ConductorController {
   constructor(
     @repository(ConductorRepository)
-    public conductorRepository : ConductorRepository,
-  ) {}
+    public conductorRepository: ConductorRepository,
+    @service(RegistroConductorService)
+    public registroConductorService: RegistroConductorService
+  ) { }
 
   @post('/conductor')
   @response(200, {
@@ -44,7 +48,9 @@ export class ConductorController {
     })
     conductor: Omit<Conductor, 'id'>,
   ): Promise<Conductor> {
-    return this.conductorRepository.create(conductor);
+    let conductorCreado = await this.conductorRepository.create(conductor);
+    this.registroConductorService.registrarConductor(conductorCreado);
+    return conductor
   }
 
   @get('/conductor/count')

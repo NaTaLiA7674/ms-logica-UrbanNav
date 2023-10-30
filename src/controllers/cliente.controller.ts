@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -20,6 +21,7 @@ import {
 import {Cliente} from '../models';
 import {ClienteRepository} from '../repositories';
 import {CalificacionConductorRepository} from '../repositories/calificacion-conductor.repository';
+import {RegistroUsuariosService} from '../services';
 
 export class ClienteController {
   constructor(
@@ -27,6 +29,8 @@ export class ClienteController {
     public clienteRepository: ClienteRepository,
     @repository(CalificacionConductorRepository)
     public calificacionConductorRepository: CalificacionConductorRepository,
+    @service(RegistroUsuariosService)
+    public registroUsuariosService: RegistroUsuariosService
   ) { }
 
   @post('/cliente')
@@ -47,7 +51,9 @@ export class ClienteController {
     })
     cliente: Omit<Cliente, 'id'>,
   ): Promise<Cliente> {
-    return this.clienteRepository.create(cliente);
+    let clienteCreado = await this.clienteRepository.create(cliente);
+    this.registroUsuariosService.registrarUsuario(clienteCreado);
+    return cliente
   }
 
   @get('/cliente/count')
