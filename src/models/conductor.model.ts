@@ -5,29 +5,12 @@ import {CalificacionCliente} from './calificacion-cliente.model';
 import {CalificacionConductor} from './calificacion-conductor.model';
 import {EstadoConductor} from './estado-conductor.model';
 import {Licencia} from './licencia.model';
-import {Vehiculo} from './vehiculo.model';
-import {Viaje} from './viaje.model';
 import {Parada} from './parada.model';
 import {UbicacionConductor} from './ubicacion-conductor.model';
+import {Vehiculo} from './vehiculo.model';
+import {Viaje} from './viaje.model';
 
-@model({
-  settings: {
-    foreignKeys: {
-      fk_conductor_vehiculoId: {
-        name: 'fk_conductor_vehiculoId',
-        entity: 'Vehiculo',
-        entityKey: 'id',
-        foreignKey: 'vehiculoId',
-      },
-      fk_conductor_licenciaId: {
-        name: 'fk_conductor_licenciaId',
-        entity: 'Licencia',
-        entityKey: 'id',
-        foreignKey: 'licenciaId',
-      },
-    },
-  },
-})
+@model()
 export class Conductor extends Entity {
   @property({
     type: 'number',
