@@ -44,6 +44,12 @@ export class Cliente extends Entity {
   })
   primerApellido: string;
 
+
+  @property({
+    type: 'string',
+  })
+  segundoApellido?: string;
+
   @property({
     type: 'string',
   })
@@ -54,11 +60,6 @@ export class Cliente extends Entity {
     type: 'string',
   })
   correo?: string;
-
-  @property({
-    type: 'string',
-  })
-  segundoApellido?: string;
 
   @hasMany(() => Viaje)
   viaje: Viaje[];

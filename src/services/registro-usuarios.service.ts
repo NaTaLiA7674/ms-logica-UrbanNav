@@ -24,7 +24,7 @@ export class RegistroUsuariosService {
       celular: cliente.celular,
       rolId: ConfiguracionSeguridad.IdRolCliente
     };
-    const urlRegistrarUsuario = `${ConfiguracionSeguridad.enlaceMicroservicioSeguridad}/usuario`;
+    const urlRegistrarUsuario = `${ConfiguracionSeguridad.enlaceMicroservicioSeguridad}/usuario-publico`;
 
     // Agrega registros detallados en diferentes puntos del flujo de ejecución
     console.log('URL de solicitud al microservicio de seguridad:', urlRegistrarUsuario);

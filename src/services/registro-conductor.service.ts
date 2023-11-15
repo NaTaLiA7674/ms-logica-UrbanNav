@@ -24,7 +24,7 @@ export class RegistroConductorService {
       celular: conductor.celular,
       rolId: ConfiguracionSeguridad.IdRolConductor
     };
-    const urlRegistrarConductor = `${ConfiguracionSeguridad.enlaceMicroservicioSeguridad}/usuario`;
+    const urlRegistrarConductor = `${ConfiguracionSeguridad.enlaceMicroservicioSeguridad}/usuario-publico`;
 
     let res = undefined;
     try {
