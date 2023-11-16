@@ -18,7 +18,7 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
-import {Cliente} from '../models';
+import {Cliente, RegistroCompletoCliente} from '../models';
 import {ClienteRepository} from '../repositories';
 import {CalificacionConductorRepository} from '../repositories/calificacion-conductor.repository';
 import {RegistroUsuariosService} from '../services';
@@ -36,24 +36,26 @@ export class ClienteController {
   @post('/cliente')
   @response(200, {
     description: 'Cliente model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Cliente)}},
+    content: {'application/json': {schema: getModelSchemaRef(RegistroCompletoCliente)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Cliente, {
+          schema: getModelSchemaRef(RegistroCompletoCliente, {
             title: 'NewCliente',
-            exclude: ['id'],
           }),
         },
       },
     })
-    cliente: Omit<Cliente, 'id'>,
+    datosRegistrados: RegistroCompletoCliente,
   ): Promise<Cliente> {
-    let clienteCreado = await this.clienteRepository.create(cliente);
+    let clienteCreado = await this.clienteRepository.create(datosRegistrados.cliente);
+    //Asignar el medio de pago segun se elija en el registro
+    clienteCreado.medioPagoId = datosRegistrados.medioPago.id!;
+    this.clienteRepository.updateById(clienteCreado.id, clienteCreado);
     this.registroUsuariosService.registrarUsuario(clienteCreado);
-    return cliente
+    return clienteCreado
   }
 
   @get('/cliente/count')

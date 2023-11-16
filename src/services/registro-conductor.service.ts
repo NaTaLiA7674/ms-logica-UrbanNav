@@ -26,6 +26,9 @@ export class RegistroConductorService {
     };
     const urlRegistrarConductor = `${ConfiguracionSeguridad.enlaceMicroservicioSeguridad}/usuario-publico`;
 
+    // Agrega registros detallados en diferentes puntos del flujo de ejecución
+    console.log('URL de solicitud al microservicio de seguridad:', urlRegistrarConductor);
+    console.log('Datos enviados al microservicio:', datos);
     let res = undefined;
     try {
       await fetch(urlRegistrarConductor, {
@@ -37,6 +40,7 @@ export class RegistroConductorService {
         .then((json: any) => {
           res = json;
         });
+      console.log('Respuesta del microservicio de seguridad:', res);
       if (res) {
         return res;
       } else {

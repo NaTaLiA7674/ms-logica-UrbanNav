@@ -18,8 +18,8 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Conductor} from '../models';
-import {ConductorRepository} from '../repositories';
+import {Conductor, RegistroCompletoConductor} from '../models';
+import {ConductorRepository, LicenciaRepository, VehiculoRepository} from '../repositories';
 import {RegistroConductorService} from '../services';
 
 export class ConductorController {
@@ -27,30 +27,37 @@ export class ConductorController {
     @repository(ConductorRepository)
     public conductorRepository: ConductorRepository,
     @service(RegistroConductorService)
-    public registroConductorService: RegistroConductorService
+    public registroConductorService: RegistroConductorService,
+    @repository(VehiculoRepository)
+    private vehiculoRepository: VehiculoRepository,
+    @repository(LicenciaRepository)
+    private licenciaRepository: LicenciaRepository,
   ) { }
 
   @post('/conductor')
   @response(200, {
     description: 'Conductor model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Conductor)}},
+    content: {'application/json': {schema: getModelSchemaRef(RegistroCompletoConductor)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Conductor, {
+          schema: getModelSchemaRef(RegistroCompletoConductor, {
             title: 'NewConductor',
-            exclude: ['id'],
           }),
         },
       },
     })
-    conductor: Omit<Conductor, 'id'>,
+    datosRegistro: RegistroCompletoConductor,
   ): Promise<Conductor> {
-    let conductorCreado = await this.conductorRepository.create(conductor);
+    let conductorCreado = await this.conductorRepository.create(datosRegistro.conductor);
+    datosRegistro.vehiculo.conductorId = conductorCreado.id!;
+    this.vehiculoRepository.create(datosRegistro.vehiculo)
+    datosRegistro.licencia.conductorId = conductorCreado.id!;
+    this.licenciaRepository.create(datosRegistro.licencia)
     this.registroConductorService.registrarConductor(conductorCreado);
-    return conductor
+    return conductorCreado
   }
 
   @get('/conductor/count')

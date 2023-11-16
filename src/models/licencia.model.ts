@@ -25,7 +25,7 @@ export class Licencia extends Entity {
     type: 'date',
     required: true,
   })
-  vigencia: string;
+  vigencia: Date;
 
   @belongsTo(() => Conductor)
   conductorId: number;

@@ -16,3 +16,5 @@ export * from './bloqueo-cliente.model';
 export * from './bloqueo-conductor.model';
 export * from './boton-panico.model';
 export * from './ubicacion-conductor.model';
+export * from './registro-completo-conductor.model';
+export * from './registro-completo-cliente.model';
