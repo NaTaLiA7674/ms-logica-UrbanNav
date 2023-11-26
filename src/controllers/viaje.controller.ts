@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +9,28 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
 import {Viaje} from '../models';
 import {ViajeRepository} from '../repositories';
+import {SolicitudViajeService} from '../services';
 
 export class ViajeController {
   constructor(
     @repository(ViajeRepository)
-    public viajeRepository : ViajeRepository,
-  ) {}
+    public viajeRepository: ViajeRepository,
+    @service(SolicitudViajeService)
+    private solicitudViajeService: SolicitudViajeService
+  ) { }
 
   @post('/viaje')
   @response(200, {
@@ -146,5 +152,50 @@ export class ViajeController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.viajeRepository.deleteById(id);
+  }
+
+  //Métodos personalizados
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuHistorialViajesId, ConfiguracionSeguridad.listarAccion],
+  })
+  @get('/viaje/{clienteId}')
+  @response(200, {
+    description: 'Array of Viaje model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Viaje, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findViajesCliente(
+    @param.path.number('clienteId') clienteId: number,
+  ): Promise<Viaje[]> {
+    return this.viajeRepository.find({where: {clienteId: clienteId}});
+  }
+
+  @get('/obtener-ruta-mas-corta/{origenId}/{destinoId}')
+  @response(200, {
+    description: 'Get shortest path between two nodes',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Viaje),
+        },
+      },
+    },
+  })
+  //Función para mostrar la función del servicio de costoRutaMasCorta
+  async rutaMasCorta(
+    @param.path.number('origenId') origenId: number,
+    @param.path.number('destinoId') destinoId: number,
+  ): Promise<number> {
+    let grafo = await this.solicitudViajeService.crearGrafo();
+    const costo = await this.solicitudViajeService.costoRutaMasCorta(origenId.toString(), destinoId.toString());
+    return costo;
   }
 }
