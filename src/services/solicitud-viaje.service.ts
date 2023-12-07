@@ -46,7 +46,7 @@ export class SolicitudViajeService {
   //Función para encontrar el camino mas corto entre origen y destino ingresados, y que devuelva el costo del viaje segun el grafo creado
   async costoRutaMasCorta(origen: string, destino: string): Promise<number> {
     const grafo = await this.crearGrafo();
-    const costoPorKilometro = 1000;
+    const costoPorKilometro = 500;
     let costoTotal = 0;
 
     if (!grafo.getNodoById(origen) || !grafo.getNodoById(destino)) {
@@ -127,21 +127,6 @@ export class SolicitudViajeService {
     console.log('Costo total: ', costoTotal);
 
     return costoTotal;
-  }
-
-  //Método para buscar los conductores cercanos a un origen teniendo en cuenta que los conductores al iniciar sesión ingresan los puntos de parada cercanos
-  async buscarConductoresCercanos(origen: string): Promise<any[]> {
-    const conductores = await this.conductorRepository.find();
-    const conductoresCercanos: any[] = [];
-
-    for await (const conductor of conductores) {
-      const paradasCercanas = conductor.paradaCercana; // Esto es una colección de paradas
-      if (paradasCercanas.some(parada => parada.nombreParada === origen)) {
-        conductoresCercanos.push(conductor);
-      }
-    }
-
-    return conductoresCercanos;
   }
 
   // print the graph node by node with edges in console

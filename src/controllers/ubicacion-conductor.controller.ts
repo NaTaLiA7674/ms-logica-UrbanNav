@@ -26,7 +26,7 @@ export class UbicacionConductorController {
     public ubicacionConductorRepository : UbicacionConductorRepository,
   ) {}
 
-  @post('/ubicacion-conductor')
+  @post('/ubicacionConductor')
   @response(200, {
     description: 'UbicacionConductor model instance',
     content: {'application/json': {schema: getModelSchemaRef(UbicacionConductor)}},
@@ -47,7 +47,7 @@ export class UbicacionConductorController {
     return this.ubicacionConductorRepository.create(ubicacionConductor);
   }
 
-  @get('/ubicacion-conductor/count')
+  @get('/ubicacionConductor/count')
   @response(200, {
     description: 'UbicacionConductor model count',
     content: {'application/json': {schema: CountSchema}},
@@ -58,7 +58,7 @@ export class UbicacionConductorController {
     return this.ubicacionConductorRepository.count(where);
   }
 
-  @get('/ubicacion-conductor')
+  @get('/ubicacionConductor')
   @response(200, {
     description: 'Array of UbicacionConductor model instances',
     content: {
@@ -76,7 +76,7 @@ export class UbicacionConductorController {
     return this.ubicacionConductorRepository.find(filter);
   }
 
-  @patch('/ubicacion-conductor')
+  @patch('/ubicacionConductor')
   @response(200, {
     description: 'UbicacionConductor PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -95,7 +95,7 @@ export class UbicacionConductorController {
     return this.ubicacionConductorRepository.updateAll(ubicacionConductor, where);
   }
 
-  @get('/ubicacion-conductor/{id}')
+  @get('/ubicacionConductor/{id}')
   @response(200, {
     description: 'UbicacionConductor model instance',
     content: {
@@ -111,7 +111,7 @@ export class UbicacionConductorController {
     return this.ubicacionConductorRepository.findById(id, filter);
   }
 
-  @patch('/ubicacion-conductor/{id}')
+  @patch('/ubicacionConductor/{id}')
   @response(204, {
     description: 'UbicacionConductor PATCH success',
   })
@@ -129,7 +129,7 @@ export class UbicacionConductorController {
     await this.ubicacionConductorRepository.updateById(id, ubicacionConductor);
   }
 
-  @put('/ubicacion-conductor/{id}')
+  @put('/ubicacionConductor/{id}')
   @response(204, {
     description: 'UbicacionConductor PUT success',
   })
@@ -140,7 +140,7 @@ export class UbicacionConductorController {
     await this.ubicacionConductorRepository.replaceById(id, ubicacionConductor);
   }
 
-  @del('/ubicacion-conductor/{id}')
+  @del('/ubicacionConductor/{id}')
   @response(204, {
     description: 'UbicacionConductor DELETE success',
   })

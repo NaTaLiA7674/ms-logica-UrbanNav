@@ -5,10 +5,9 @@ import {CalificacionCliente} from './calificacion-cliente.model';
 import {CalificacionConductor} from './calificacion-conductor.model';
 import {EstadoConductor} from './estado-conductor.model';
 import {Licencia} from './licencia.model';
-import {Parada} from './parada.model';
-import {UbicacionConductor} from './ubicacion-conductor.model';
 import {Vehiculo} from './vehiculo.model';
 import {Viaje} from './viaje.model';
+import {UbicacionConductor} from './ubicacion-conductor.model';
 
 @model()
 export class Conductor extends Entity {
@@ -75,8 +74,8 @@ export class Conductor extends Entity {
   @hasMany(() => BotonPanico)
   botonPanico: BotonPanico[];
 
-  @hasMany(() => Parada, {through: {model: () => UbicacionConductor}})
-  paradaCercana: Parada[];
+  @hasMany(() => UbicacionConductor)
+  ubicacionConductor: UbicacionConductor[];
 
   constructor(data?: Partial<Conductor>) {
     super(data);

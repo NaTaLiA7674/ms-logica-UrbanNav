@@ -1,4 +1,6 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Conductor} from './conductor.model';
+import {Parada} from './parada.model';
 
 @model()
 export class UbicacionConductor extends Entity {
@@ -9,10 +11,11 @@ export class UbicacionConductor extends Entity {
   })
   id?: number;
 
-  @property({
-    type: 'number',
-  })
-  conductorId?: number;
+  @belongsTo(() => Conductor)
+  conductorId: number;
+
+  @belongsTo(() => Parada)
+  origenId: number;
 
   @property({
     type: 'number',
