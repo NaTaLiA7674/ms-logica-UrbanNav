@@ -31,7 +31,7 @@ export class BloqueoCliente extends Entity {
     type: 'date',
     required: true,
   })
-  fecha: string;
+  fecha: Date;
 
   @belongsTo(() => Cliente)
   clienteId: number;

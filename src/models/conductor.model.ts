@@ -3,11 +3,10 @@ import {BloqueoConductor} from './bloqueo-conductor.model';
 import {BotonPanico} from './boton-panico.model';
 import {CalificacionCliente} from './calificacion-cliente.model';
 import {CalificacionConductor} from './calificacion-conductor.model';
-import {EstadoConductor} from './estado-conductor.model';
 import {Licencia} from './licencia.model';
+import {UbicacionConductor} from './ubicacion-conductor.model';
 import {Vehiculo} from './vehiculo.model';
 import {Viaje} from './viaje.model';
-import {UbicacionConductor} from './ubicacion-conductor.model';
 
 @model()
 export class Conductor extends Entity {
@@ -50,6 +49,16 @@ export class Conductor extends Entity {
   })
   celular?: string;
 
+  @property({
+    type: 'boolean',
+  })
+  estado?: boolean;
+
+  @property({
+    type: 'boolean',
+  })
+  bloqueado?: boolean;
+
   @belongsTo(() => Vehiculo)
   vehiculoId: number;
 
@@ -58,9 +67,6 @@ export class Conductor extends Entity {
 
   @hasMany(() => Viaje)
   viaje: Viaje[];
-
-  @hasMany(() => EstadoConductor)
-  estadoConductor: EstadoConductor[];
 
   @hasMany(() => BloqueoConductor)
   bloqueoConductor: BloqueoConductor[];

@@ -7,7 +7,6 @@ export * from './ciudad.model';
 export * from './cliente.model';
 export * from './conductor.model';
 export * from './distancias.model';
-export * from './estado-conductor.model';
 export * from './estado-viaje.model';
 export * from './factura.model';
 export * from './licencia.model';
@@ -19,3 +18,4 @@ export * from './vehiculo.model';
 export * from './viaje.model';
 
 export * from './ubicacion-conductor.model';
+

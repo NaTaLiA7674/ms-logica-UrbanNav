@@ -7,7 +7,6 @@ export * from './ciudad.repository';
 export * from './cliente.repository';
 export * from './conductor.repository';
 export * from './distancias.repository';
-export * from './estado-conductor.repository';
 export * from './estado-viaje.repository';
 export * from './factura.repository';
 export * from './licencia.repository';
@@ -17,3 +16,4 @@ export * from './vehiculo.repository';
 export * from './viaje.repository';
 
 export * from './ubicacion-conductor.repository';
+

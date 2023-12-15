@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,32 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {UbicacionConductor} from '../models';
-import {UbicacionConductorRepository} from '../repositories';
+import {ConfiguracionSeguridad} from '../config/configuracion.seguridad';
+import {Conductor, UbicacionConductor} from '../models';
+import {ConductorRepository, UbicacionConductorRepository} from '../repositories';
 
 export class UbicacionConductorController {
   constructor(
     @repository(UbicacionConductorRepository)
-    public ubicacionConductorRepository : UbicacionConductorRepository,
-  ) {}
+    public ubicacionConductorRepository: UbicacionConductorRepository,
+    @repository(ConductorRepository)
+    public conductorRepository: ConductorRepository,
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [ConfiguracionSeguridad.menuEstablecerOrigenDestino, ConfiguracionSeguridad.guardarAccion],
+  })
   @post('/ubicacionConductor')
   @response(200, {
     description: 'UbicacionConductor model instance',
@@ -147,4 +155,33 @@ export class UbicacionConductorController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.ubicacionConductorRepository.deleteById(id);
   }
+
+  //Metodos personalizados
+  // ...
+
+  //obtener los conductores que estan en una parada
+  @get('/ubicacionConductor/{origenId}')
+  @response(200, {
+    description: 'Array of UbicacionConductor model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Conductor, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async obtenerConductoresEnParada(
+    @param.path.number('origenId') origenId: number,
+    @param.filter(Conductor) filter?: Filter<Conductor>,
+  ): Promise<Conductor[]> {
+    const ubicaciones = await this.ubicacionConductorRepository.find({where: {origenId: origenId}});
+    const conductorId = ubicaciones.map(ubicacion => ubicacion.conductorId);
+    return this.conductorRepository.find({where: {id: {inq: conductorId}}});
+  }
+
 }
+
+// ...
+
